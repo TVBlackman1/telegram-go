@@ -1,7 +1,62 @@
 package main
 
-import "fmt"
+import (
+	"fmt"
+	"log"
 
+	tgbotapi "github.com/go-telegram-bot-api/telegram-bot-api/v5"
+	"github.com/spf13/viper"
+)
+
+type Config struct {
+	TELEGRAM_TOKEN string `mapstructure:"TELEGRAM_TOKEN"`
+}
+
+func loadConfig(path string) (config Config, err error) {
+	viper.AddConfigPath(path)
+	viper.SetConfigName("production")
+	viper.SetConfigType("env")
+
+	viper.AutomaticEnv()
+
+	err = viper.ReadInConfig()
+	if err != nil {
+		return
+	}
+
+	err = viper.Unmarshal(&config)
+	return
+}
 func main() {
 	fmt.Println("Telegram bot starting..")
+	config, err := loadConfig(".")
+	if err != nil {
+		log.Fatal("cannot load config:", err)
+	}
+	println(config.TELEGRAM_TOKEN)
+	bot, err := tgbotapi.NewBotAPI(config.TELEGRAM_TOKEN)
+	if err != nil {
+		log.Panic(err)
+	}
+
+	bot.Debug = true
+
+	log.Printf("Authorized on account %s", bot.Self.UserName)
+
+	u := tgbotapi.NewUpdate(0)
+	u.Timeout = 60
+
+	updates := bot.GetUpdatesChan(u)
+
+	for update := range updates {
+		if update.Message != nil { // If we got a message
+			log.Printf("[%s] %s", update.Message.From.UserName, update.Message.Text)
+
+			msg := tgbotapi.NewMessage(update.Message.Chat.ID, update.Message.Text)
+			msg.ReplyToMessageID = update.Message.MessageID
+
+			bot.Send(msg)
+		}
+	}
+
 }
