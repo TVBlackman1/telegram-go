@@ -3,6 +3,7 @@ package main
 import (
 	"fmt"
 	"log"
+	"os"
 
 	tgbotapi "github.com/go-telegram-bot-api/telegram-bot-api/v5"
 	"github.com/spf13/viper"
@@ -29,6 +30,8 @@ func loadConfig(path string) (config Config, err error) {
 }
 func main() {
 	fmt.Println("Telegram bot starting..")
+	fmt.Println(os.Getenv("APP_ENV"))
+	fmt.Print()
 	config, err := loadConfig(".")
 	if err != nil {
 		log.Fatal("cannot load config:", err)
