@@ -3,6 +3,7 @@ module github.com/TVBlackman1/telegram-go
 go 1.18
 
 require (
+	github.com/codingconcepts/env v0.0.0-20200821220118-a8fbf8d84482 // indirect
 	github.com/crgimenes/goconfig v1.4.7 // indirect
 	github.com/fsnotify/fsnotify v1.5.4 // indirect
 	github.com/go-telegram-bot-api/telegram-bot-api/v5 v5.5.1 // indirect
