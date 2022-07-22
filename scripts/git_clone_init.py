@@ -1,4 +1,3 @@
-#!/bin/bash
 import shutil
 from pathlib import Path
 import os
