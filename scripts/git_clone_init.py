@@ -2,10 +2,16 @@
 import shutil
 from pathlib import Path
 import os
+import subprocess
 
 def is_exist(path: str) -> bool:
     _path = Path(path)
     return _path.is_file()
+
+def execute_bash(command: str):
+    bashCommand = "go mod download"
+    process = subprocess.Popen(bashCommand.split(), stdout=subprocess.PIPE)
+    output, error = process.communicate()
 
 def restore_missing_env_files():
     main_filename = './example.env'
@@ -19,5 +25,17 @@ def restore_missing_env_files():
             print(f'{filename} created')
             shutil.copy(main_filename, filename)
 
-os.chdir('..')
-restore_missing_env_files()
+def download_dependencies():
+    execute_bash("go mod download")
+
+def place_dependencies_locally():
+    execute_bash("go mod vendor")
+
+def main():
+    os.chdir('..')
+    restore_missing_env_files()
+    download_dependencies()
+    place_dependencies_locally()
+
+if __name__ == '__main__':
+    main()
