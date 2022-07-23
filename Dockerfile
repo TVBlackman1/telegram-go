@@ -10,6 +10,9 @@ FROM golang:1.18-alpine as builder
 
 COPY --from=modules /go/pkg /go/pkg
 
+RUN apk update && apk add ca-certificates tzdata
+RUN adduser -Du 10001 botviewer
+
 RUN mkdir -p /application
 ADD . /application
 WORKDIR /application
@@ -18,5 +21,17 @@ RUN go mod vendor
 RUN GOOS=linux GOARCH=amd64 CGO_ENABLED=0 \
     go build -mod=vendor -o ./bin/main.out ./cmd/main.go
 
-WORKDIR /application/bin
+
+# Final stage
+FROM scratch
+
+COPY --from=builder /etc/passwd /etc/passwd
+COPY --from=builder /etc/ssl/certs/ca-certificates.crt /etc/ssl/certs/
+COPY --from=builder /usr/share/zoneinfo /usr/share/zoneinfo/
+COPY --from=builder /application/bin/main.out /application/main.out
+
+USER botviewer
+ADD ./develop.env ./
+
+WORKDIR /application
 CMD ["./main.out"]
