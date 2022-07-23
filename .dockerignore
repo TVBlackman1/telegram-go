@@ -1,0 +1,7 @@
+.vscode
+LICENSE
+.git
+Dockerfile
+
+vendor/*
+example.env

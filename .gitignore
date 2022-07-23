@@ -3,3 +3,4 @@
 !example.env
 */*.out
 vendor/*
+bin/*
