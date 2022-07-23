@@ -1,4 +1,4 @@
-BINARY_NAME=main.out
+BINARY_NAME=../bin/main.out
 MAIN_FILE=../cmd/main.go
 
 PRODUCTION_ENV=production
