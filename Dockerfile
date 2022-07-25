@@ -10,8 +10,11 @@ FROM golang:1.18-alpine as builder
 
 COPY --from=modules /go/pkg /go/pkg
 
-RUN apk update && apk add ca-certificates tzdata
+RUN apk update && apk add --no-cache ca-certificates tzdata 
 RUN adduser -Du 10001 botviewer
+
+RUN cp /usr/share/zoneinfo/Europe/Moscow /etc/localtime
+RUN echo "Europe/Moscow" >  /etc/timezone
 
 RUN mkdir -p /application
 ADD . /application
@@ -28,8 +31,11 @@ FROM scratch
 COPY --from=builder /etc/passwd /etc/passwd
 COPY --from=builder /etc/ssl/certs/ca-certificates.crt /etc/ssl/certs/
 COPY --from=builder /usr/share/zoneinfo /usr/share/zoneinfo/
-COPY --from=builder /application/bin/main.out /application/main.out
+COPY --from=builder /etc/localtime /etc/localtime
+COPY --from=builder /etc/timezone /etc/timezone
+ENV TZ=Europe/Moscow
 
+COPY --from=builder /application/bin/main.out /application/main.out
 USER botviewer
 ADD ./develop.env ./
 
