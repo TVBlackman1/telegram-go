@@ -8,8 +8,7 @@ def is_exist(path: str) -> bool:
     return _path.is_file()
 
 def execute_bash(command: str):
-    bashCommand = "go mod download"
-    process = subprocess.Popen(bashCommand.split(), stdout=subprocess.PIPE)
+    process = subprocess.Popen(command.split(), stdout=subprocess.PIPE)
     output, error = process.communicate()
 
 def restore_missing_env_files():
