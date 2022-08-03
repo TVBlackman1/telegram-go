@@ -17,7 +17,7 @@ type Config struct {
 }
 
 func LoadConfig(path string) (config Config, err error) {
-	appEnviropmentVersion := os.Getenv(APP_ENV)
+	appEnviropmentVersion := AplicationEnv(os.Getenv(APP_ENV))
 
 	configFilename, err := getEnvMapping(appEnviropmentVersion)
 	if err != nil {
@@ -54,13 +54,13 @@ func fillEmptyEnvValuesByDefault(config *Config) {
 	}
 }
 
-func getEnvMapping(appEnviropmentVersion string) (configFilename string, resultError error) {
+func getEnvMapping(appEnviropmentVersion AplicationEnv) (configFilename string, resultError error) {
 	switch appEnviropmentVersion {
-	case "production":
+	case PRODUCTION_ENV:
 		configFilename = "production"
-	case "develop":
+	case DEVELOP_ENV:
 		configFilename = "develop"
-	case "test":
+	case TEST_ENV:
 		configFilename = "test"
 	default:
 		errorText := fmt.Sprintf("bad enviropment var: %s", APP_ENV)
