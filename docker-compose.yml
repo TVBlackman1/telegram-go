@@ -1,0 +1,21 @@
+# test docker compose
+# TODO all
+
+version: '3'
+services:
+  flyway:
+    image: flyway/flyway:9.1.2-alpine
+    command: -url=jdbc:postgresql://db/tgbot -schemas=schemaName -user=postgres -password=postgres -connectRetries=10 migrate
+    volumes:
+      - ${PWD}/init/migrations:/flyway/sql
+    depends_on:
+      - db
+  db:
+    image: postgres:latest
+    restart: always
+    ports:
+    - "5433:5432"
+    environment:
+    - POSTGRES_USER=postgres
+    - POSTGRES_PASSWORD=postgres
+    - POSTGRES_DB=tgbot
