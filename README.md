@@ -2,6 +2,11 @@
 
 Go application with telegram bot. Consider it like test example.
 
+Target fsm model of user:
+
+
+![alt text](./readmectx/uml-states.png)
+
 ## Run project
 
 #### a) Standard  Go application
