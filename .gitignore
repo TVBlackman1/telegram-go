@@ -1,7 +1,7 @@
 .vscode
 *.env
 !example.env
-*/*.out
 vendor/*
 bin/*
+*/*.out
 */*.config
