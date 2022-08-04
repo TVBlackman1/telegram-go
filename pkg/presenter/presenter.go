@@ -8,22 +8,22 @@ import (
 )
 
 func Present(msg *tgbotapi.MessageConfig, data MessageUnion) error {
-	if data.text != "" {
-		msg.Text = data.text
+	if data.Text != "" {
+		msg.Text = data.Text
 	}
-	if !reflect.ValueOf(data.keyboard).IsZero() {
+	if !reflect.ValueOf(data.Keyboard).IsZero() {
 		replyKeyboard := tgbotapi.NewReplyKeyboard()
-		for i := 0; i < len(data.keyboard); i++ {
+		for i := 0; i < len(data.Keyboard); i++ {
 			replyKeyboard.Keyboard = append(replyKeyboard.Keyboard, tgbotapi.NewKeyboardButtonRow())
-			for j := 0; j < len(data.keyboard[i]); j++ {
-				text := string(data.keyboard[i][j])
+			for j := 0; j < len(data.Keyboard[i]); j++ {
+				text := string(data.Keyboard[i][j])
 				lastRow := replyKeyboard.Keyboard[len(replyKeyboard.Keyboard)-1]
 				lastRow = append(lastRow, tgbotapi.NewKeyboardButton(text))
 				replyKeyboard.Keyboard[len(replyKeyboard.Keyboard)-1] = lastRow
 			}
 		}
 	}
-	if len(data.media) > 0 {
+	if len(data.Media) > 0 {
 		return errors.New("Media is not supported")
 	}
 	return nil

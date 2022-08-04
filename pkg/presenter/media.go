@@ -16,7 +16,7 @@ const (
 )
 
 type Media struct {
-	source     string
-	sourceType Source
-	kind       Kind
+	Source     string
+	SourceType Source
+	Kind       Kind
 }
