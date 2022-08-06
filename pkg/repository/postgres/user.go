@@ -1,17 +1,21 @@
 package postgres
 
 import (
-	"context"
 	"fmt"
+	"os"
 
-	"github.com/jackc/pgx/v4"
+	"github.com/jmoiron/sqlx"
 )
 
-type UserRepository struct {
-	db *pgx.Conn
+type UserDbDto struct {
+	Name string
 }
 
-func NewUserRepository(db *pgx.Conn) *UserRepository {
+type UserRepository struct {
+	db *sqlx.DB
+}
+
+func NewUserRepository(db *sqlx.DB) *UserRepository {
 	return &UserRepository{db}
 }
 
@@ -25,8 +29,17 @@ func (rep *UserRepository) Remove(interface{}) {
 
 func (rep *UserRepository) GetList(interface{}) {
 	var name string
-	rep.db.QueryRow(context.Background(), "select name from users").Scan(&name)
-	fmt.Println(name)
+	rep.db.QueryRow("select name from users").Scan(&name)
+	query := "select name from users"
+	rows, err := rep.db.Queryx(query)
+	if err != nil {
+		fmt.Fprintf(os.Stderr, "Bad request: %s", query)
+	}
+	for rows.Next() {
+		var user UserDbDto
+		rows.StructScan(&user)
+		fmt.Println(user.Name)
+	}
 }
 
 func (rep *UserRepository) Edit(interface{}) {

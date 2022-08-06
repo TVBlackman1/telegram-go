@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	"log"
 	"os"
 
@@ -22,7 +23,9 @@ func main() {
 		Password: config.POSTGRES_PASS,
 	}
 	repo, err := repo.NewRepository(dbConfig)
+	defer repo.Close()
 	if err != nil {
+		fmt.Fprintf(os.Stderr, "repo err: %s", err.Error())
 		os.Exit(1)
 	}
 	repo.UserRepository.GetList(14)

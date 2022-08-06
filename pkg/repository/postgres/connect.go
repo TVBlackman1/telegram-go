@@ -1,11 +1,11 @@
 package postgres
 
 import (
-	"context"
 	"errors"
 	"fmt"
 
-	"github.com/jackc/pgx/v4"
+	_ "github.com/jackc/pgx/v4/stdlib"
+	"github.com/jmoiron/sqlx"
 )
 
 type PostgresConfig struct {
@@ -16,11 +16,11 @@ type PostgresConfig struct {
 	Password string
 }
 
-func Connect(config PostgresConfig) (*pgx.Conn, error) {
+func Connect(config PostgresConfig) (*sqlx.DB, error) {
 	dbConnectUrl := fmt.Sprintf("postgres://%s:%s@%s:%d/%s",
 		config.User, config.Password, config.Host, config.Port, config.Dbname,
 	)
-	conn, err := pgx.Connect(context.Background(), dbConnectUrl)
+	conn, err := sqlx.Open("pgx", dbConnectUrl)
 	if err != nil {
 		errorText := fmt.Sprintf("Unable to connect to database: %v\n", err)
 		return nil, errors.New(errorText)

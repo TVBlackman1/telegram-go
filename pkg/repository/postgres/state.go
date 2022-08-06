@@ -1,14 +1,12 @@
 package postgres
 
-import (
-	"github.com/jackc/pgx/v4"
-)
+import "github.com/jmoiron/sqlx"
 
 type StateRepository struct {
-	db *pgx.Conn
+	db *sqlx.DB
 }
 
-func NewStateRepository(db *pgx.Conn) *StateRepository {
+func NewStateRepository(db *sqlx.DB) *StateRepository {
 	return &StateRepository{db}
 }
 
