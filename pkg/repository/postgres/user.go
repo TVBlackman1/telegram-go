@@ -8,7 +8,8 @@ import (
 )
 
 type UserDbDto struct {
-	Name string
+	Name   string
+	ChatId int `db:"chat_id"`
 }
 
 type UserRepository struct {
@@ -28,9 +29,7 @@ func (rep *UserRepository) Remove(interface{}) {
 }
 
 func (rep *UserRepository) GetList(interface{}) {
-	var name string
-	rep.db.QueryRow("select name from users").Scan(&name)
-	query := "select name from users"
+	query := "select name, chat_id from users"
 	rows, err := rep.db.Queryx(query)
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "Bad request: %s", query)
@@ -38,7 +37,7 @@ func (rep *UserRepository) GetList(interface{}) {
 	for rows.Next() {
 		var user UserDbDto
 		rows.StructScan(&user)
-		fmt.Println(user.Name)
+		fmt.Println(user.Name, user.ChatId)
 	}
 }
 
