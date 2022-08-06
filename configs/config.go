@@ -13,6 +13,7 @@ type Config struct {
 	POSTGRES_USER   string
 	POSTGRES_PASS   string
 	POSTGRES_DBNAME string
+	POSTGRES_HOST   string
 	POSTGRES_PORT   int
 }
 
@@ -51,6 +52,9 @@ func fillEmptyEnvValuesByDefault(config *Config) {
 	}
 	if config.POSTGRES_PORT == 0 {
 		config.POSTGRES_PORT = 5432
+	}
+	if config.POSTGRES_HOST == "" {
+		config.POSTGRES_HOST = "0.0.0.0"
 	}
 }
 
