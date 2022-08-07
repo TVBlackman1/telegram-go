@@ -4,13 +4,9 @@ import (
 	"fmt"
 	"os"
 
+	"github.com/TVBlackman1/telegram-go/pkg/repository"
 	"github.com/jmoiron/sqlx"
 )
-
-type UserDbDto struct {
-	Name   string
-	ChatId int `db:"chat_id"`
-}
 
 type UserRepository struct {
 	db *sqlx.DB
@@ -28,17 +24,13 @@ func (rep *UserRepository) Remove(interface{}) {
 
 }
 
-func (rep *UserRepository) GetList(interface{}) {
-	query := "select name, chat_id from users"
-	rows, err := rep.db.Queryx(query)
-	if err != nil {
-		fmt.Fprintf(os.Stderr, "Bad request: %s", query)
+func (rep *UserRepository) GetList(interface{}) []repository.UserDbDto {
+	query := "select id, name, chat_id, state_id from users"
+	var users []repository.UserDbDto
+	if err := rep.db.Select(&users, query); err != nil {
+		fmt.Fprintf(os.Stderr, "Bad request: %s", err.Error())
 	}
-	for rows.Next() {
-		var user UserDbDto
-		rows.StructScan(&user)
-		fmt.Println(user.Name, user.ChatId)
-	}
+	return users
 }
 
 func (rep *UserRepository) Edit(interface{}) {
