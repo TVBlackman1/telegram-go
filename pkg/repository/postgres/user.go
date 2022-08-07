@@ -29,10 +29,10 @@ func (rep *UserRepository) Remove(interface{}) {
 func (rep *UserRepository) GetList(query repository.UserListQuery) repository.UsersDbMetaDto {
 	selectedFields := "id, name, chat_id, state_id"
 	var logicBuilder strings.Builder
-	fmt.Fprintf(&logicBuilder, "FROM %s", repository.USERS_TABLENAME)
-	if query.Name != "" {
-		fmt.Fprintf(&logicBuilder, " where name like '%%%s%%'", query.Name)
-	}
+	utils.AddPrimaryTableToBuilder(&logicBuilder, repository.USERS_TABLENAME)
+	addListQueryConditions(&logicBuilder, query)
+
+	query.Pagination.CheckValues(repository.USERS_LIMIT)
 	req := &utils.RequestWithPagination{
 		Db:         rep.db,
 		LogicPart:  logicBuilder.String(),
@@ -55,4 +55,10 @@ func (rep *UserRepository) GetList(query repository.UserListQuery) repository.Us
 
 func (rep *UserRepository) Edit(interface{}) {
 
+}
+
+func addListQueryConditions(logicBuilder *strings.Builder, query repository.UserListQuery) {
+	if query.Name != "" {
+		fmt.Fprintf(logicBuilder, " where name like '%%%s%%'", query.Name)
+	}
 }

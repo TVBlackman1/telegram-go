@@ -15,6 +15,23 @@ func (p *QueryPagination) DB() DBPagination {
 	}
 }
 
+func (p *QueryPagination) CheckValues(maxSize int) {
+	p.checkMaxPageSize(maxSize)
+	p.checkPageNumber()
+}
+
+func (p *QueryPagination) checkPageNumber() {
+	if p.Page == 0 {
+		p.Page = 1
+	}
+}
+
+func (p *QueryPagination) checkMaxPageSize(maxSize int) {
+	if p.Size == 0 || p.Size > maxSize {
+		p.Size = maxSize
+	}
+}
+
 type Pagination struct {
 	Page  int
 	Pages int

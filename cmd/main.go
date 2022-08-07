@@ -9,7 +9,6 @@ import (
 	"github.com/TVBlackman1/telegram-go/pkg"
 	"github.com/TVBlackman1/telegram-go/pkg/repository"
 	repo "github.com/TVBlackman1/telegram-go/pkg/repository/postgres"
-	"github.com/TVBlackman1/telegram-go/pkg/repository/utils"
 )
 
 func main() {
@@ -30,11 +29,6 @@ func main() {
 		fmt.Fprintf(os.Stderr, "repo err: %s", err.Error())
 		os.Exit(1)
 	}
-	repo.UserRepository.GetList(repository.UserListQuery{
-		Pagination: utils.QueryPagination{
-			Size: 20,
-			Page: 1,
-		},
-	})
+	repo.UserRepository.GetList(repository.UserListQuery{})
 	pkg.RunTelegramBot(config.TELEGRAM_TOKEN)
 }

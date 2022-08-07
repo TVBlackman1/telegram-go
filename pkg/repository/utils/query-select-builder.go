@@ -36,5 +36,3 @@ func (q *QueryBuilder) WithSelected(selected string, paginationRule ruleResponse
 func (q *QueryBuilder) UpdateLogicPart(logicPart string) {
 	q.logicPart = logicPart
 }
-
-// select, logic, limits
