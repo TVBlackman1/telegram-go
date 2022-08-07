@@ -26,6 +26,5 @@ func Connect(config PostgresConfig) (*sqlx.DB, error) {
 		return nil, errors.New(errorText)
 	}
 	fmt.Printf("Connected to database '%s' on %s:%d\n", config.Dbname, config.Host, config.Port)
-	// defer conn.Close(context.Background())
 	return conn, nil
 }
