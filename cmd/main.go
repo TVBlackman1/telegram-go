@@ -6,9 +6,10 @@ import (
 	"os"
 
 	"github.com/TVBlackman1/telegram-go/configs"
-	"github.com/TVBlackman1/telegram-go/pkg"
 	"github.com/TVBlackman1/telegram-go/pkg/repository"
 	repo "github.com/TVBlackman1/telegram-go/pkg/repository/postgres"
+	"github.com/TVBlackman1/telegram-go/pkg/states"
+	telegramlistener "github.com/TVBlackman1/telegram-go/pkg/telegram-listener"
 )
 
 func main() {
@@ -29,6 +30,9 @@ func main() {
 		fmt.Fprintf(os.Stderr, "repo err: %s", err.Error())
 		os.Exit(1)
 	}
+	stateService := states.NewStateService(repo)
+	handler := telegramlistener.NewHandler(stateService)
 	repo.UserRepository.GetList(repository.UserListQuery{})
-	pkg.RunTelegramBot(config.TELEGRAM_TOKEN)
+	bot := telegramlistener.NewTelegramBot(config.TELEGRAM_TOKEN, handler)
+	bot.Run()
 }

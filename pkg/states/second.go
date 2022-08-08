@@ -8,22 +8,22 @@ import (
 	tgbotapi "github.com/go-telegram-bot-api/telegram-bot-api/v5"
 )
 
-type FirstState struct {
+type SecondState struct {
 	rep *repository.Repository
 }
 
-func (state *FirstState) PreparePresentation() presenter.MessageUnion {
+func (state *SecondState) PreparePresentation() presenter.MessageUnion {
 	return presenter.MessageUnion{
 		Text: "???",
 	}
 }
 
-func (state *FirstState) ProcessUserInput(user *tgbotapi.User, msg presenter.MessageUnion) {
+func (state *SecondState) ProcessUserInput(user *tgbotapi.User, msg presenter.MessageUnion) {
 	if msg.Text == "2" {
 		state.action(user, msg.Text)
 	}
 }
 
-func (state *FirstState) action(user *tgbotapi.User, text string) {
+func (state *SecondState) action(user *tgbotapi.User, text string) {
 	fmt.Printf("User %s sent: %s", user.FirstName, text)
 }
