@@ -30,7 +30,7 @@ func Present(msg *tgbotapi.MessageConfig, data types.MessageUnion) error {
 	return nil
 }
 
-func Collect(msg *tgbotapi.MessageConfig) types.MessageUnion {
+func Collect(msg *tgbotapi.Message) types.MessageUnion {
 	var messageDto types.MessageUnion
 	if msg.Text != "" {
 		messageDto.Text = msg.Text

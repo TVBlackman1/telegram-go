@@ -5,7 +5,6 @@ import (
 
 	"github.com/TVBlackman1/telegram-go/pkg/lib/presenter/types"
 	"github.com/TVBlackman1/telegram-go/pkg/states"
-	tgbotapi "github.com/go-telegram-bot-api/telegram-bot-api/v5"
 )
 
 type TestHandler struct {
@@ -16,8 +15,8 @@ func NewTestHandler(stateService *states.StateService) *TestHandler {
 	return &TestHandler{stateService}
 }
 
-func (listener *TestHandler) Process(message *tgbotapi.Message) types.MessageUnion {
-	text := message.Text
+func (listener *TestHandler) Process(message types.ReceivedMessage) types.MessageUnion {
+	text := message.Content.Text
 	return types.MessageUnion{
 		Text: strings.ToUpper(text),
 	}

@@ -5,3 +5,9 @@ type MessageUnion struct {
 	Keyboard Keyboard
 	Media    []Media
 }
+
+type ChatId int
+type ReceivedMessage struct {
+	ChatId
+	Content MessageUnion
+}
