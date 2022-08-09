@@ -1,4 +1,4 @@
-package impls
+package handlers
 
 import (
 	"github.com/TVBlackman1/telegram-go/pkg/lib/presenter/types"

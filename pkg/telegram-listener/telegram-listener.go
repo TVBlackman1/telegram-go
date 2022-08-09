@@ -4,67 +4,64 @@ import (
 	"log"
 	"reflect"
 
-	"github.com/TVBlackman1/telegram-go/pkg/handler"
 	"github.com/TVBlackman1/telegram-go/pkg/lib/presenter"
 	"github.com/TVBlackman1/telegram-go/pkg/lib/presenter/types"
+	"github.com/TVBlackman1/telegram-go/pkg/router"
 	tgbotapi "github.com/go-telegram-bot-api/telegram-bot-api/v5"
 )
 
-type TelegramBot struct {
-	token   string
-	handler *handler.Handler
+type TgWorkspace struct {
+	token  string
+	router *router.Router
+	bot    *tgbotapi.BotAPI
 }
 
-func NewTelegramBot(token string, handler *handler.Handler) *TelegramBot {
-	return &TelegramBot{
-		token, handler,
+func NewTelegramBot(token string, router *router.Router) *TgWorkspace {
+	return &TgWorkspace{
+		token, router, nil,
 	}
 }
 
-func (telegramBot *TelegramBot) Run() error {
-	bot, err := tgbotapi.NewBotAPI(telegramBot.token)
+func (workspace *TgWorkspace) Run() error {
+	bot, err := tgbotapi.NewBotAPI(workspace.token)
 	if err != nil {
 		return err
 	}
+	workspace.bot = bot
 	log.Printf("Authorized on account %s", bot.Self.UserName)
-	u := tgbotapi.NewUpdate(0)
-	u.Timeout = 60
-
-	updates := bot.GetUpdatesChan(u)
+	updates := workspace.getMessageChan()
 
 	for update := range updates {
 		if update.Message != nil {
 			log.Printf("[%s] %s", update.Message.From.UserName, update.Message.Text)
-
-			msg := tgbotapi.NewMessage(update.Message.Chat.ID, update.Message.Text)
-			receivedMessage := telegramBot.buildReceivedMessage(update.Message)
-			answer := telegramBot.allocateMessage(receivedMessage)
-			if !reflect.ValueOf(answer).IsZero() {
-				presenter.Present(&msg, answer)
-				bot.Send(msg)
-			}
-
+			workspace.reactOnMessage(update.Message)
 		}
 	}
 	return nil
-
 }
 
-func (telegramBot *TelegramBot) allocateMessage(message types.ReceivedMessage) types.MessageUnion {
-	// TODO add interfaces to listeners
-	var retMessage types.MessageUnion
-	if message.Content.Text == "/start" {
-		telegramBot.handler.StartListener.Process(message)
-	} else {
-		retMessage = telegramBot.handler.TestListener.Process(message)
+func (workspace *TgWorkspace) reactOnMessage(message *tgbotapi.Message) {
+	receivedMessage := workspace.buildReceivedMessage(message)
+	usingHandler := workspace.router.RouteByMessage(receivedMessage)
+	answer := usingHandler.Process(receivedMessage)
+	if reflect.ValueOf(answer).IsZero() {
+		return
 	}
-	return retMessage
+	msg := tgbotapi.NewMessage(message.Chat.ID, "")
+	presenter.Present(&msg, answer)
+	workspace.bot.Send(msg)
 }
 
-func (telegramBot *TelegramBot) buildReceivedMessage(message *tgbotapi.Message) types.ReceivedMessage {
+func (workspace *TgWorkspace) buildReceivedMessage(message *tgbotapi.Message) types.ReceivedMessage {
 	chatId := types.ChatId(message.Chat.ID)
 	return types.ReceivedMessage{
 		ChatId:  chatId,
 		Content: presenter.Collect(message),
 	}
+}
+
+func (workspace *TgWorkspace) getMessageChan() tgbotapi.UpdatesChannel {
+	u := tgbotapi.NewUpdate(0)
+	u.Timeout = 60
+	return workspace.bot.GetUpdatesChan(u)
 }

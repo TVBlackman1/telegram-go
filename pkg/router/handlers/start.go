@@ -1,4 +1,4 @@
-package impls
+package handlers
 
 import (
 	"fmt"
@@ -15,7 +15,7 @@ func NewStartHandler(stateService *service.StateService) *StartHandler {
 	return &StartHandler{stateService}
 }
 
-func (listener *StartHandler) Process(message types.ReceivedMessage) {
+func (listener *StartHandler) Process(message types.ReceivedMessage) types.MessageUnion {
 	fmt.Printf("Start from %d\n", message.ChatId)
-
+	return types.MessageUnion{}
 }
