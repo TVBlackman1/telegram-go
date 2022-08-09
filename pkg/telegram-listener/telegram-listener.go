@@ -4,16 +4,18 @@ import (
 	"log"
 	"reflect"
 
+	"github.com/TVBlackman1/telegram-go/pkg/handler"
 	"github.com/TVBlackman1/telegram-go/pkg/presenter"
+	"github.com/TVBlackman1/telegram-go/pkg/presenter/types"
 	tgbotapi "github.com/go-telegram-bot-api/telegram-bot-api/v5"
 )
 
 type TelegramBot struct {
 	token   string
-	handler *Handler
+	handler *handler.Handler
 }
 
-func NewTelegramBot(token string, handler *Handler) *TelegramBot {
+func NewTelegramBot(token string, handler *handler.Handler) *TelegramBot {
 	return &TelegramBot{
 		token, handler,
 	}
@@ -47,9 +49,9 @@ func (telegramBot *TelegramBot) Run() error {
 
 }
 
-func (telegramBot *TelegramBot) allocateMessage(message *tgbotapi.Message) presenter.MessageUnion {
+func (telegramBot *TelegramBot) allocateMessage(message *tgbotapi.Message) types.MessageUnion {
 	// TODO add interfaces to listeners
-	var retMessage presenter.MessageUnion
+	var retMessage types.MessageUnion
 	if message.Text == "/start" {
 		telegramBot.handler.StartListener.Process(message)
 	} else {

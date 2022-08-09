@@ -1,4 +1,4 @@
-package presenter
+package types
 
 type Source string
 

@@ -3,7 +3,7 @@ package states
 import (
 	"fmt"
 
-	"github.com/TVBlackman1/telegram-go/pkg/presenter"
+	"github.com/TVBlackman1/telegram-go/pkg/presenter/types"
 	"github.com/TVBlackman1/telegram-go/pkg/repository"
 	tgbotapi "github.com/go-telegram-bot-api/telegram-bot-api/v5"
 )
@@ -12,13 +12,13 @@ type FirstState struct {
 	rep *repository.Repository
 }
 
-func (state *FirstState) PreparePresentation() presenter.MessageUnion {
-	return presenter.MessageUnion{
+func (state *FirstState) PreparePresentation() types.MessageUnion {
+	return types.MessageUnion{
 		Text: "???",
 	}
 }
 
-func (state *FirstState) ProcessUserInput(user *tgbotapi.User, msg presenter.MessageUnion) {
+func (state *FirstState) ProcessUserInput(user *tgbotapi.User, msg types.MessageUnion) {
 	if msg.Text == "2" {
 		state.action(user, msg.Text)
 	}

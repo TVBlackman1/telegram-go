@@ -1,4 +1,4 @@
-package presenter
+package types
 
 type MessageUnion struct {
 	Text     string

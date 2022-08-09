@@ -4,10 +4,11 @@ import (
 	"errors"
 	"reflect"
 
+	"github.com/TVBlackman1/telegram-go/pkg/presenter/types"
 	tgbotapi "github.com/go-telegram-bot-api/telegram-bot-api/v5"
 )
 
-func Present(msg *tgbotapi.MessageConfig, data MessageUnion) error {
+func Present(msg *tgbotapi.MessageConfig, data types.MessageUnion) error {
 	if data.Text != "" {
 		msg.Text = data.Text
 	}

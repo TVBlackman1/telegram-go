@@ -1,4 +1,4 @@
-package telegramlistener
+package impls
 
 import (
 	"fmt"
@@ -7,11 +7,15 @@ import (
 	tgbotapi "github.com/go-telegram-bot-api/telegram-bot-api/v5"
 )
 
-type StartListener struct {
+type StartHandler struct {
 	stateService *states.StateService
 }
 
-func (listener *StartListener) Process(message *tgbotapi.Message) {
+func NewStartHandler(stateService *states.StateService) *StartHandler {
+	return &StartHandler{stateService}
+}
+
+func (listener *StartHandler) Process(message *tgbotapi.Message) {
 	fmt.Printf("Start from %s\n", message.From.UserName)
 
 }
