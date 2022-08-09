@@ -22,6 +22,8 @@ run: build
 	@$(call notify_about_APP_ENV,${APP_ENV})
 	./${BINARY_NAME}
 
+docker_dev:
+	docker run --add-host=host.docker.internal:host-gateway -de APP_ENV=develop bot:0.1
 clean:
 	go clean
 	rm ${BINARY_NAME}
