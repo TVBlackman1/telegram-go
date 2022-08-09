@@ -2,7 +2,7 @@ package handler
 
 import (
 	handlers "github.com/TVBlackman1/telegram-go/pkg/handler/impls"
-	"github.com/TVBlackman1/telegram-go/pkg/states"
+	"github.com/TVBlackman1/telegram-go/pkg/service"
 )
 
 type Handler struct {
@@ -11,7 +11,7 @@ type Handler struct {
 	TestListener   *handlers.TestHandler
 }
 
-func NewHandler(stateService *states.StateService) *Handler {
+func NewHandler(stateService *service.StateService) *Handler {
 	return &Handler{
 		StartListener:  handlers.NewStartHandler(stateService),
 		StatesListener: handlers.NewStatesHandler(stateService),

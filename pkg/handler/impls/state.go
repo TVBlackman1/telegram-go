@@ -1,11 +1,11 @@
 package impls
 
-import "github.com/TVBlackman1/telegram-go/pkg/states"
+import "github.com/TVBlackman1/telegram-go/pkg/service"
 
 type StatesHandler struct {
-	stateService *states.StateService
+	stateService *service.StateService
 }
 
-func NewStatesHandler(stateService *states.StateService) *StatesHandler {
+func NewStatesHandler(stateService *service.StateService) *StatesHandler {
 	return &StatesHandler{stateService}
 }

@@ -12,6 +12,10 @@ type FirstState struct {
 	rep *repository.Repository
 }
 
+func NewFirstState(rep *repository.Repository) *FirstState {
+	return &FirstState{rep}
+}
+
 func (state *FirstState) PreparePresentation() types.MessageUnion {
 	return types.MessageUnion{
 		Text: "???",

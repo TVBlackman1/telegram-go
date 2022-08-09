@@ -4,14 +4,14 @@ import (
 	"strings"
 
 	"github.com/TVBlackman1/telegram-go/pkg/lib/presenter/types"
-	"github.com/TVBlackman1/telegram-go/pkg/states"
+	"github.com/TVBlackman1/telegram-go/pkg/service"
 )
 
 type TestHandler struct {
-	stateService *states.StateService
+	stateService *service.StateService
 }
 
-func NewTestHandler(stateService *states.StateService) *TestHandler {
+func NewTestHandler(stateService *service.StateService) *TestHandler {
 	return &TestHandler{stateService}
 }
 
