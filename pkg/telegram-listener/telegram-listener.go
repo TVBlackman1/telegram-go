@@ -5,8 +5,8 @@ import (
 	"reflect"
 
 	"github.com/TVBlackman1/telegram-go/pkg/handler"
-	"github.com/TVBlackman1/telegram-go/pkg/presenter"
-	"github.com/TVBlackman1/telegram-go/pkg/presenter/types"
+	"github.com/TVBlackman1/telegram-go/pkg/lib/presenter"
+	"github.com/TVBlackman1/telegram-go/pkg/lib/presenter/types"
 	tgbotapi "github.com/go-telegram-bot-api/telegram-bot-api/v5"
 )
 

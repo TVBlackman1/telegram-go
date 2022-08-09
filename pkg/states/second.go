@@ -3,7 +3,7 @@ package states
 import (
 	"fmt"
 
-	"github.com/TVBlackman1/telegram-go/pkg/presenter/types"
+	"github.com/TVBlackman1/telegram-go/pkg/lib/presenter/types"
 	"github.com/TVBlackman1/telegram-go/pkg/repository"
 	tgbotapi "github.com/go-telegram-bot-api/telegram-bot-api/v5"
 )

@@ -4,7 +4,7 @@ import (
 	"errors"
 	"reflect"
 
-	"github.com/TVBlackman1/telegram-go/pkg/presenter/types"
+	"github.com/TVBlackman1/telegram-go/pkg/lib/presenter/types"
 	tgbotapi "github.com/go-telegram-bot-api/telegram-bot-api/v5"
 )
 
@@ -25,7 +25,15 @@ func Present(msg *tgbotapi.MessageConfig, data types.MessageUnion) error {
 		}
 	}
 	if len(data.Media) > 0 {
-		return errors.New("Media is not supported")
+		return errors.New("media is not supported")
 	}
 	return nil
+}
+
+func Collect(msg *tgbotapi.MessageConfig) types.MessageUnion {
+	var messageDto types.MessageUnion
+	if msg.Text != "" {
+		messageDto.Text = msg.Text
+	}
+	return messageDto
 }
