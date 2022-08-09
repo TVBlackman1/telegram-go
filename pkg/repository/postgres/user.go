@@ -7,6 +7,7 @@ import (
 
 	"github.com/TVBlackman1/telegram-go/pkg/repository"
 	"github.com/TVBlackman1/telegram-go/pkg/repository/utils"
+	"github.com/google/uuid"
 	"github.com/jmoiron/sqlx"
 )
 
@@ -18,7 +19,20 @@ func NewUserRepository(db *sqlx.DB) *UserRepository {
 	return &UserRepository{db}
 }
 
-func (rep *UserRepository) Add(interface{}) {
+func (rep *UserRepository) Add(query repository.CreateUserDto) (uuid.UUID, error) {
+	request := fmt.Sprintf("INSERT INTO %s(id, name, chat_id) VALUES ('%s', '%s', '%d') RETURNING id;\n",
+		repository.USERS_TABLENAME,
+		query.Id,
+		query.Name,
+		query.ChatId,
+	)
+	var uuidStr string
+	err := rep.db.Get(&uuidStr, request)
+	if err != nil {
+		fmt.Fprintln(os.Stderr, err.Error())
+		return uuid.UUID{}, err
+	}
+	return uuid.Parse(uuidStr)
 
 }
 

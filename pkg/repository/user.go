@@ -1,19 +1,29 @@
 package repository
 
-import "github.com/TVBlackman1/telegram-go/pkg/repository/utils"
+import (
+	"github.com/TVBlackman1/telegram-go/pkg/repository/utils"
+	"github.com/google/uuid"
+)
 
 type UserRepository interface {
-	Add(interface{})
+	Add(query CreateUserDto) (uuid.UUID, error)
 	Remove(interface{})
 	Edit(interface{})
 	GetList(query UserListQuery) UsersDbMetaDto
 }
 
+type CreateUserDto struct {
+	Id     uuid.UUID `db:"id"`
+	Name   string    `db:"name"`
+	ChatId int       `db:"chat_id"`
+	// StateId string `db:"state_id"`
+}
+
 type UserDbDto struct {
-	Id      string `db:"id"`
-	Name    string `db:"name"`
-	ChatId  int    `db:"chat_id"`
-	StateId string `db:"state_id"`
+	Id      uuid.UUID `db:"id"`
+	Name    string    `db:"name"`
+	ChatId  int       `db:"chat_id"`
+	StateId string    `db:"state_id"`
 }
 
 type UsersDbMetaDto struct {
