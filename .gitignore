@@ -3,5 +3,5 @@
 !example.env
 vendor/*
 bin/*
-*/*.out
-*/*.config
+**/*.out
+**/ideas.txt
