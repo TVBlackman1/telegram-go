@@ -1,6 +1,7 @@
 package repository
 
 import (
+	"github.com/TVBlackman1/telegram-go/pkg/lib/presenter/types"
 	"github.com/TVBlackman1/telegram-go/pkg/repository/utils"
 	"github.com/google/uuid"
 )
@@ -10,20 +11,21 @@ type UserRepository interface {
 	Remove(interface{})
 	Edit(interface{})
 	GetList(query UserListQuery) UsersDbMetaDto
+	GetOne(query UserQuery) UserDbDto
 }
 
 type CreateUserDto struct {
-	Id     uuid.UUID `db:"id"`
-	Name   string    `db:"name"`
-	ChatId int       `db:"chat_id"`
+	Id     uuid.UUID    `db:"id"`
+	Name   string       `db:"name"`
+	ChatId types.ChatId `db:"chat_id"`
 	// StateId string `db:"state_id"`
 }
 
 type UserDbDto struct {
-	Id      uuid.UUID `db:"id"`
-	Name    string    `db:"name"`
-	ChatId  int       `db:"chat_id"`
-	StateId string    `db:"state_id"`
+	Id      uuid.UUID    `db:"id"`
+	Name    string       `db:"name"`
+	ChatId  types.ChatId `db:"chat_id"`
+	StateId string       `db:"state_id"`
 }
 
 type UsersDbMetaDto struct {
@@ -39,7 +41,7 @@ type UserListQuery struct {
 
 type UserQuery struct {
 	Name   string
-	ChatId string
+	ChatId types.ChatId
 }
 
 const (

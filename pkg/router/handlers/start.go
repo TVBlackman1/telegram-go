@@ -15,7 +15,12 @@ func NewStartHandler(stateService *service.StateService) *StartHandler {
 	return &StartHandler{stateService}
 }
 
-func (listener *StartHandler) Process(message types.ReceivedMessage) types.MessageUnion {
-	fmt.Printf("Start from %d\n", message.ChatId)
-	return types.MessageUnion{}
+func (handler *StartHandler) Process(message types.ReceivedMessage) types.MessageUnion {
+	fmt.Printf("Start from chat id %d\n", message.ChatId)
+	// state := handler.stateService.GetCurrentState(message)
+	// TODO add check current state, nil
+	handler.stateService.RegisterNewUser(message.ChatId)
+	return types.MessageUnion{
+		Text: fmt.Sprintf("New user with chat id %d", message.ChatId),
+	}
 }

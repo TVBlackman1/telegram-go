@@ -32,6 +32,7 @@ func (rep *UserRepository) Add(query repository.CreateUserDto) (uuid.UUID, error
 		fmt.Fprintln(os.Stderr, err.Error())
 		return uuid.UUID{}, err
 	}
+	fmt.Println(uuidStr)
 	return uuid.Parse(uuidStr)
 
 }
@@ -69,6 +70,29 @@ func (rep *UserRepository) GetList(query repository.UserListQuery) repository.Us
 
 func (rep *UserRepository) Edit(interface{}) {
 
+}
+
+func (rep *UserRepository) GetOne(query repository.UserQuery) repository.UserDbDto {
+	// selectedFields := "id, name, chat_id, state_id"
+	// var logicBuilder strings.Builder
+	// utils.AddPrimaryTableToBuilder(&logicBuilder, repository.USERS_TABLENAME)
+	// addListQueryConditions(&logicBuilder, query)
+
+	// var request strings.Builder
+	// request.WriteString("SELECT ")
+	// request.WriteString(selectedFields)
+	// request.WriteRune(' ')
+	// request.WriteString(logicBuilder.String())
+
+	// var user repository.UserDbDto
+
+	// err := rep.db.Get(&user, request.String())
+	// if err != nil {
+	// 	fmt.Fprintf(os.Stderr, "Bad request: %s", err.Error())
+	// }
+	// fmt.Println(user)
+	// return user
+	return repository.UserDbDto{}
 }
 
 func addListQueryConditions(logicBuilder *strings.Builder, query repository.UserListQuery) {
