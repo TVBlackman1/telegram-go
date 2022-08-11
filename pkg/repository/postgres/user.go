@@ -1,6 +1,7 @@
 package postgres
 
 import (
+	"errors"
 	"fmt"
 	"os"
 	"strings"
@@ -20,19 +21,27 @@ func NewUserRepository(db *sqlx.DB) *UserRepository {
 }
 
 func (rep *UserRepository) Add(query repository.CreateUserDto) (uuid.UUID, error) {
-	request := fmt.Sprintf("INSERT INTO %s(id, name, chat_id) VALUES ('%s', '%s', '%d') RETURNING id;\n",
+	existingUser, err := rep.GetOne(repository.UserQuery{
+		Login: query.Login,
+	})
+	alreadyExist := err == nil
+	if alreadyExist {
+		return existingUser.Id, errors.New("already exist")
+	}
+
+	request := fmt.Sprintf("INSERT INTO %s(id, name, login, chat_id) VALUES ('%s', '%s', '%s', '%d') RETURNING id;\n",
 		repository.USERS_TABLENAME,
 		query.Id,
 		query.Name,
+		query.Login,
 		query.ChatId,
 	)
 	var uuidStr string
-	err := rep.db.Get(&uuidStr, request)
+	err = rep.db.Get(&uuidStr, request)
 	if err != nil {
 		fmt.Fprintln(os.Stderr, err.Error())
 		return uuid.UUID{}, err
 	}
-	fmt.Println(uuidStr)
 	return uuid.Parse(uuidStr)
 
 }
@@ -42,7 +51,7 @@ func (rep *UserRepository) Remove(interface{}) {
 }
 
 func (rep *UserRepository) GetList(query repository.UserListQuery) repository.UsersDbMetaDto {
-	selectedFields := "id, name, chat_id, state_id"
+	selectedFields := "id, name, login, chat_id, state_id"
 	var logicBuilder strings.Builder
 	utils.AddPrimaryTableToBuilder(&logicBuilder, repository.USERS_TABLENAME)
 	addListQueryConditions(&logicBuilder, query)
@@ -78,7 +87,7 @@ func (rep *UserRepository) Edit(interface{}) {
 }
 
 func (rep *UserRepository) GetOne(query repository.UserQuery) (repository.UserDbDto, error) {
-	selectedFields := "id, name, chat_id, state_id"
+	selectedFields := "id, name, login, chat_id, state_id"
 	var logicBuilder strings.Builder
 	utils.AddPrimaryTableToBuilder(&logicBuilder, repository.USERS_TABLENAME)
 	addQueryConditions(&logicBuilder, query)
@@ -97,7 +106,6 @@ func (rep *UserRepository) GetOne(query repository.UserQuery) (repository.UserDb
 		return repository.UserDbDto{}, err
 	}
 	user := repository.UserDbToUserDbDto(userDb)
-	fmt.Println(user)
 	return user, nil
 }
 
@@ -109,9 +117,9 @@ func addListQueryConditions(logicBuilder *strings.Builder, query repository.User
 
 func addQueryConditions(logicBuilder *strings.Builder, query repository.UserQuery) {
 	alreadyWithCondition := false
-	if query.Name != "" {
+	if query.Login != "" {
 		addSQLKeywords(logicBuilder, alreadyWithCondition)
-		fmt.Fprintf(logicBuilder, "name='%s'", query.Name)
+		fmt.Fprintf(logicBuilder, "login='%s'", query.Login)
 		alreadyWithCondition = true
 	}
 	if query.ChatId != 0 {

@@ -2,7 +2,6 @@ package service
 
 import (
 	"fmt"
-	"os"
 
 	"github.com/TVBlackman1/telegram-go/pkg/lib/presenter/types"
 	"github.com/TVBlackman1/telegram-go/pkg/repository"
@@ -30,14 +29,23 @@ func (stateService *StateService) GetCurrentState(message types.ReceivedMessage)
 	})
 }
 
-func (stateService *StateService) RegisterNewUser(sender types.Sender) {
+func (stateService *StateService) RegisterNewUser(sender types.Sender) types.MessageUnion {
+	var retMessage types.MessageUnion
 	newUser := repository.CreateUserDto{
 		Id:     uuid.New(),
+		Login:  sender.Login,
 		Name:   sender.Name,
 		ChatId: sender.ChatId,
 	}
 	_, err := stateService.rep.UserRepository.Add(newUser)
 	if err != nil {
-		fmt.Fprintln(os.Stderr, err.Error())
+		retMessage = types.MessageUnion{
+			Text: fmt.Sprintf("You are already using this bot, %s!", sender.Name),
+		}
+	} else {
+		retMessage = types.MessageUnion{
+			Text: fmt.Sprintf("Thanks for using bot, %s!", sender.Name),
+		}
 	}
+	return retMessage
 }

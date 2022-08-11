@@ -19,6 +19,7 @@ type UserRepository interface {
 type CreateUserDto struct {
 	Id     uuid.UUID    `db:"id"`
 	Name   string       `db:"name"`
+	Login  string       `db:"login"`
 	ChatId types.ChatId `db:"chat_id"`
 	// StateId string `db:"state_id"`
 }
@@ -26,6 +27,7 @@ type CreateUserDto struct {
 type UserDbDto struct {
 	Id      uuid.UUID
 	Name    string
+	Login   string
 	ChatId  types.ChatId
 	StateId string
 }
@@ -33,6 +35,7 @@ type UserDbDto struct {
 type UserDb struct {
 	Id      uuid.UUID      `db:"id"`
 	Name    sql.NullString `db:"name"`
+	Login   sql.NullString `db:"login"`
 	ChatId  types.ChatId   `db:"chat_id"`
 	StateId sql.NullString `db:"state_id"`
 }
@@ -49,7 +52,7 @@ type UserListQuery struct {
 }
 
 type UserQuery struct {
-	Name   string
+	Login  string
 	ChatId types.ChatId
 }
 
@@ -68,6 +71,9 @@ func UserDbToUserDbDto(userDb UserDb) UserDbDto {
 	}
 	if userDb.StateId.Valid {
 		user.StateId = userDb.StateId.String
+	}
+	if userDb.Login.Valid {
+		user.Login = userDb.Login.String
 	}
 	return user
 }

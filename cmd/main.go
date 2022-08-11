@@ -6,7 +6,6 @@ import (
 	"os"
 
 	"github.com/TVBlackman1/telegram-go/configs"
-	"github.com/TVBlackman1/telegram-go/pkg/repository"
 	repo "github.com/TVBlackman1/telegram-go/pkg/repository/postgres"
 	"github.com/TVBlackman1/telegram-go/pkg/router"
 	"github.com/TVBlackman1/telegram-go/pkg/service"
@@ -31,11 +30,6 @@ func main() {
 		fmt.Fprintf(os.Stderr, "repo err: %s", err.Error())
 		os.Exit(1)
 	}
-	repo.UserRepository.GetList(repository.UserListQuery{})
-	repo.UserRepository.GetOne(repository.UserQuery{
-		ChatId: 537172348,
-	})
-
 	stateService := service.NewStateService(repo)
 	router := router.NewRouter(stateService)
 	bot := telegramlistener.NewTelegramBot(config.TELEGRAM_TOKEN, router)
