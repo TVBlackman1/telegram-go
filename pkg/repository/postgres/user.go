@@ -62,16 +62,7 @@ func (rep *UserRepository) GetList(query repository.UserListQuery) repository.Us
 
 	users := make([]repository.UserDbDto, len(usersDb))
 	for i, userDb := range usersDb {
-		users[i] = repository.UserDbDto{
-			Id:     userDb.Id,
-			ChatId: userDb.ChatId,
-		}
-		if userDb.Name.Valid {
-			users[i].Name = userDb.Name.String
-		}
-		if userDb.StateId.Valid {
-			users[i].StateId = userDb.StateId.String
-		}
+		users[i] = repository.UserDbToUserDbDto(userDb)
 	}
 
 	fmt.Printf("%+v\n", pagination)
@@ -100,23 +91,12 @@ func (rep *UserRepository) GetOne(query repository.UserQuery) (repository.UserDb
 	utils.AddLimit1(&request)
 
 	var userDb repository.UserDb
-	fmt.Println(request.String())
 	err := rep.db.Get(&userDb, request.String())
-	// TODO nullstrings to other place
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "Bad request: %s\n", err.Error())
 		return repository.UserDbDto{}, err
 	}
-	user := repository.UserDbDto{
-		Id:     userDb.Id,
-		ChatId: userDb.ChatId,
-	}
-	if userDb.Name.Valid {
-		user.Name = userDb.Name.String
-	}
-	if userDb.StateId.Valid {
-		user.StateId = userDb.StateId.String
-	}
+	user := repository.UserDbToUserDbDto(userDb)
 	fmt.Println(user)
 	return user, nil
 }

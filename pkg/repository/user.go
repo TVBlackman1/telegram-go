@@ -57,3 +57,17 @@ const (
 	USERS_LIMIT     = 30
 	USERS_TABLENAME = "users"
 )
+
+func UserDbToUserDbDto(userDb UserDb) UserDbDto {
+	user := UserDbDto{
+		Id:     userDb.Id,
+		ChatId: userDb.ChatId,
+	}
+	if userDb.Name.Valid {
+		user.Name = userDb.Name.String
+	}
+	if userDb.StateId.Valid {
+		user.StateId = userDb.StateId.String
+	}
+	return user
+}
