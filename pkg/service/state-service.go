@@ -30,11 +30,11 @@ func (stateService *StateService) GetCurrentState(message types.ReceivedMessage)
 	})
 }
 
-func (stateService *StateService) RegisterNewUser(chatId types.ChatId) {
+func (stateService *StateService) RegisterNewUser(sender types.Sender) {
 	newUser := repository.CreateUserDto{
 		Id:     uuid.New(),
-		Name:   "",
-		ChatId: chatId,
+		Name:   sender.Name,
+		ChatId: sender.ChatId,
 	}
 	_, err := stateService.rep.UserRepository.Add(newUser)
 	if err != nil {

@@ -19,7 +19,7 @@ func (handler *StartHandler) Process(message types.ReceivedMessage) types.Messag
 	fmt.Printf("Start from chat id %d\n", message.ChatId)
 	// state := handler.stateService.GetCurrentState(message)
 	// TODO add check current state, nil
-	handler.stateService.RegisterNewUser(message.ChatId)
+	handler.stateService.RegisterNewUser(message.Sender)
 	return types.MessageUnion{
 		Text: fmt.Sprintf("New user with chat id %d", message.ChatId),
 	}

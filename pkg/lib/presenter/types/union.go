@@ -7,7 +7,13 @@ type MessageUnion struct {
 }
 
 type ChatId int
-type ReceivedMessage struct {
+
+type Sender struct {
 	ChatId
+	Name  string
+	Login string
+}
+type ReceivedMessage struct {
+	Sender
 	Content MessageUnion
 }

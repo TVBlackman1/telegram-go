@@ -54,8 +54,13 @@ func (workspace *TgWorkspace) reactOnMessage(message *tgbotapi.Message) {
 
 func (workspace *TgWorkspace) buildReceivedMessage(message *tgbotapi.Message) types.ReceivedMessage {
 	chatId := types.ChatId(message.Chat.ID)
+	sender := types.Sender{
+		ChatId: chatId,
+		Name:   message.From.FirstName,
+		Login:  message.From.UserName,
+	}
 	return types.ReceivedMessage{
-		ChatId:  chatId,
+		Sender:  sender,
 		Content: presenter.Collect(message),
 	}
 }
