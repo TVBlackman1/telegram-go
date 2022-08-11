@@ -25,7 +25,7 @@ func NewStateService(rep *repository.Repository) *StateService {
 
 func (stateService *StateService) GetCurrentState(message types.ReceivedMessage) {
 	stateService.rep.GetOne(repository.UserQuery{
-		ChatId: message.ChatId,
+		ChatId: message.Sender.ChatId,
 	})
 }
 

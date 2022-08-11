@@ -43,7 +43,6 @@ func (rep *UserRepository) Add(query repository.CreateUserDto) (uuid.UUID, error
 		return uuid.UUID{}, err
 	}
 	return uuid.Parse(uuidStr)
-
 }
 
 func (rep *UserRepository) Remove(interface{}) {
@@ -74,8 +73,6 @@ func (rep *UserRepository) GetList(query repository.UserListQuery) repository.Us
 		users[i] = repository.UserDbToUserDbDto(userDb)
 	}
 
-	fmt.Printf("%+v\n", pagination)
-	fmt.Println(users)
 	return repository.UsersDbMetaDto{
 		Data: users,
 		Meta: pagination,

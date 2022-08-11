@@ -5,7 +5,6 @@ import (
 
 	"github.com/TVBlackman1/telegram-go/pkg/lib/presenter/types"
 	"github.com/TVBlackman1/telegram-go/pkg/repository"
-	tgbotapi "github.com/go-telegram-bot-api/telegram-bot-api/v5"
 )
 
 type FirstState struct {
@@ -22,12 +21,12 @@ func (state *FirstState) PreparePresentation() types.MessageUnion {
 	}
 }
 
-func (state *FirstState) ProcessUserInput(user *tgbotapi.User, msg types.MessageUnion) {
-	if msg.Text == "2" {
-		state.action(user, msg.Text)
+func (state *FirstState) ProcessUserInput(msg types.ReceivedMessage) {
+	if msg.Content.Text == "2" {
+		fmt.Printf("User %s sent: %s", msg.Sender.Login, msg.Content.Text)
 	}
 }
 
-func (state *FirstState) action(user *tgbotapi.User, text string) {
-	fmt.Printf("User %s sent: %s", user.FirstName, text)
+func (state *FirstState) SetState(sender types.Sender, context interface{}) {
+	// TODO
 }

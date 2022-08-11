@@ -14,6 +14,6 @@ type Sender struct {
 	Login string
 }
 type ReceivedMessage struct {
-	Sender
+	Sender  Sender
 	Content MessageUnion
 }
