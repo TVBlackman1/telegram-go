@@ -54,10 +54,24 @@ func (rep *UserRepository) GetList(query repository.UserListQuery) repository.Us
 		Selected:   selectedFields,
 		Pagination: query.Pagination,
 	}
-	var users []repository.UserDbDto
-	pagination, err := req.SelectIn(&users)
+	var usersDb []repository.UserDb
+	pagination, err := req.SelectIn(&usersDb)
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "Bad request: %s", err.Error())
+	}
+
+	users := make([]repository.UserDbDto, len(usersDb))
+	for i, userDb := range usersDb {
+		users[i] = repository.UserDbDto{
+			Id:     userDb.Id,
+			ChatId: userDb.ChatId,
+		}
+		if userDb.Name.Valid {
+			users[i].Name = userDb.Name.String
+		}
+		if userDb.StateId.Valid {
+			users[i].StateId = userDb.StateId.String
+		}
 	}
 
 	fmt.Printf("%+v\n", pagination)
@@ -72,31 +86,65 @@ func (rep *UserRepository) Edit(interface{}) {
 
 }
 
-func (rep *UserRepository) GetOne(query repository.UserQuery) repository.UserDbDto {
-	// selectedFields := "id, name, chat_id, state_id"
-	// var logicBuilder strings.Builder
-	// utils.AddPrimaryTableToBuilder(&logicBuilder, repository.USERS_TABLENAME)
-	// addListQueryConditions(&logicBuilder, query)
+func (rep *UserRepository) GetOne(query repository.UserQuery) (repository.UserDbDto, error) {
+	selectedFields := "id, name, chat_id, state_id"
+	var logicBuilder strings.Builder
+	utils.AddPrimaryTableToBuilder(&logicBuilder, repository.USERS_TABLENAME)
+	addQueryConditions(&logicBuilder, query)
 
-	// var request strings.Builder
-	// request.WriteString("SELECT ")
-	// request.WriteString(selectedFields)
-	// request.WriteRune(' ')
-	// request.WriteString(logicBuilder.String())
+	var request strings.Builder
+	request.WriteString("SELECT ")
+	request.WriteString(selectedFields)
+	request.WriteRune(' ')
+	request.WriteString(logicBuilder.String())
+	utils.AddLimit1(&request)
 
-	// var user repository.UserDbDto
-
-	// err := rep.db.Get(&user, request.String())
-	// if err != nil {
-	// 	fmt.Fprintf(os.Stderr, "Bad request: %s", err.Error())
-	// }
-	// fmt.Println(user)
-	// return user
-	return repository.UserDbDto{}
+	var userDb repository.UserDb
+	fmt.Println(request.String())
+	err := rep.db.Get(&userDb, request.String())
+	// TODO nullstrings to other place
+	if err != nil {
+		fmt.Fprintf(os.Stderr, "Bad request: %s\n", err.Error())
+		return repository.UserDbDto{}, err
+	}
+	user := repository.UserDbDto{
+		Id:     userDb.Id,
+		ChatId: userDb.ChatId,
+	}
+	if userDb.Name.Valid {
+		user.Name = userDb.Name.String
+	}
+	if userDb.StateId.Valid {
+		user.StateId = userDb.StateId.String
+	}
+	fmt.Println(user)
+	return user, nil
 }
 
 func addListQueryConditions(logicBuilder *strings.Builder, query repository.UserListQuery) {
 	if query.Name != "" {
 		fmt.Fprintf(logicBuilder, " where name like '%%%s%%'", query.Name)
+	}
+}
+
+func addQueryConditions(logicBuilder *strings.Builder, query repository.UserQuery) {
+	alreadyWithCondition := false
+	if query.Name != "" {
+		addSQLKeywords(logicBuilder, alreadyWithCondition)
+		fmt.Fprintf(logicBuilder, "name='%s'", query.Name)
+		alreadyWithCondition = true
+	}
+	if query.ChatId != 0 {
+		addSQLKeywords(logicBuilder, alreadyWithCondition)
+		fmt.Fprintf(logicBuilder, "chat_id='%d'", query.ChatId)
+		alreadyWithCondition = true
+	}
+}
+
+func addSQLKeywords(logicBuilder *strings.Builder, alreadyWithCondition bool) {
+	if alreadyWithCondition {
+		fmt.Fprint(logicBuilder, " AND ")
+	} else {
+		fmt.Fprint(logicBuilder, " WHERE ")
 	}
 }
