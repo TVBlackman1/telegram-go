@@ -3,7 +3,6 @@ package main
 import (
 	"fmt"
 	"log"
-	"os"
 
 	"github.com/TVBlackman1/telegram-go/configs"
 	repo "github.com/TVBlackman1/telegram-go/pkg/repository/postgres"
@@ -25,11 +24,11 @@ func main() {
 		Password: config.POSTGRES_PASS,
 	}
 	repo, err := repo.NewRepository(dbConfig)
-	defer repo.Close()
 	if err != nil {
-		fmt.Fprintf(os.Stderr, "repo err: %s", err.Error())
-		os.Exit(1)
+		panicContent := fmt.Sprintf("repo err: %s", err.Error())
+		panic(panicContent)
 	}
+	repo.Close()
 	stateService := service.NewStateService(repo)
 	router := router.NewRouter(stateService)
 	bot := telegramlistener.NewTelegramBot(config.TELEGRAM_TOKEN, router)

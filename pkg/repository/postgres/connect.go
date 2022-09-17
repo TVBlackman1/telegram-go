@@ -20,7 +20,7 @@ func Connect(config PostgresConfig) (*sqlx.DB, error) {
 	dbConnectUrl := fmt.Sprintf("postgres://%s:%s@%s:%d/%s",
 		config.User, config.Password, config.Host, config.Port, config.Dbname,
 	)
-	conn, err := sqlx.Open("pgx", dbConnectUrl)
+	conn, err := sqlx.Connect("pgx", dbConnectUrl)
 	if err != nil {
 		errorText := fmt.Sprintf("Unable to connect to database: %v\n", err)
 		return nil, errors.New(errorText)

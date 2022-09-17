@@ -17,5 +17,6 @@ func (repo *Repository) Close() {
 	err := repo.Conn.Close()
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "Closing db error: %s", err.Error())
+		panic("Closing db panic")
 	}
 }
