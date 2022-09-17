@@ -6,7 +6,7 @@ DEVELOP_ENV=develop
 TEST_ENV=test
 
 
-notify_about_APP_ENV = $(if $(1),echo "\033[0;32mproject enviropment: $(1)\033[0m",echo "\033[33mWARNING: APP_ENV is empty\033[0m")
+notify_about_APP_ENV = $(if $(1),echo "\033[0;32mproject environment: $(1)\033[0m",echo "\033[33mWARNING: APP_ENV is empty\033[0m")
 
 run_production: export APP_ENV=${PRODUCTION_ENV}
 run_develop: export APP_ENV=${DEVELOP_ENV}
