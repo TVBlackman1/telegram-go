@@ -5,7 +5,6 @@ import (
 
 	"github.com/TVBlackman1/telegram-go/pkg/lib/presenter/types"
 	"github.com/TVBlackman1/telegram-go/pkg/repository"
-	tgbotapi "github.com/go-telegram-bot-api/telegram-bot-api/v5"
 )
 
 type SecondState struct {
@@ -22,12 +21,12 @@ func (state *SecondState) PreparePresentation() types.MessageUnion {
 	}
 }
 
-func (state *SecondState) ProcessUserInput(user *tgbotapi.User, msg types.MessageUnion) {
-	if msg.Text == "2" {
-		state.action(user, msg.Text)
+func (state *SecondState) ProcessUserInput(msg types.ReceivedMessage) {
+	if msg.Content.Text == "2" {
+		state.action(msg.Sender.Login, msg.Content.Text)
 	}
 }
 
-func (state *SecondState) action(user *tgbotapi.User, text string) {
-	fmt.Printf("User %s sent: %s", user.FirstName, text)
+func (state *SecondState) action(login string, text string) {
+	fmt.Printf("User %s sent: %s", login, text)
 }

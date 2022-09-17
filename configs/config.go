@@ -54,7 +54,13 @@ func fillEmptyEnvValuesByDefault(config *Config) {
 		config.POSTGRES_PORT = 5432
 	}
 	if config.POSTGRES_HOST == "" {
-		config.POSTGRES_HOST = "0.0.0.0"
+		hostOnFly := os.Getenv("POSTGRES_HOST")
+		// TODO simplify, auto loading from env space
+		if hostOnFly != "" {
+			config.POSTGRES_HOST = hostOnFly
+		} else {
+			config.POSTGRES_HOST = "0.0.0.0"
+		}
 	}
 }
 
