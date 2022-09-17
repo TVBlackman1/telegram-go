@@ -5,8 +5,13 @@ PRODUCTION_ENV=production
 DEVELOP_ENV=develop
 TEST_ENV=test
 
+RED=\033[0;31m
+GREEN=\033[0;32m
+ORANGE=\033[33m
+COMMON_COLOR=\033[0m
 
-notify_about_APP_ENV = $(if $(1),echo "\033[0;32mproject environment: $(1)\033[0m",echo "\033[33mWARNING: APP_ENV is empty\033[0m")
+
+notify_about_APP_ENV = $(if $(1),echo -e "${GREEN}project environment: $(1)${COMMON_COLOR}",echo -e "\${ORANGE}WARNING: APP_ENV is empty${COMMON_COLOR}")
 
 run_production: export APP_ENV=${PRODUCTION_ENV}
 run_develop: export APP_ENV=${DEVELOP_ENV}
