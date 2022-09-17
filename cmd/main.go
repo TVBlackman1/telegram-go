@@ -28,7 +28,7 @@ func main() {
 		panicContent := fmt.Sprintf("repo err: %s", err.Error())
 		panic(panicContent)
 	}
-	repo.Close()
+	defer repo.Close()
 	stateService := service.NewStateService(repo)
 	router := router.NewRouter(stateService)
 	bot := telegramlistener.NewTelegramBot(config.TELEGRAM_TOKEN, router)

@@ -1,7 +1,6 @@
 package postgres
 
 import (
-	"errors"
 	"fmt"
 	"os"
 	"strings"
@@ -26,7 +25,7 @@ func (rep *UserRepository) Add(query repository.CreateUserDto) (uuid.UUID, error
 	})
 	alreadyExist := err == nil
 	if alreadyExist {
-		return existingUser.Id, errors.New("already exist")
+		return existingUser.Id, utils.ErrAlreadyExists
 	}
 
 	request := fmt.Sprintf("INSERT INTO %s(id, name, login, chat_id) VALUES ('%s', '%s', '%s', '%d') RETURNING id;\n",
@@ -102,6 +101,7 @@ func (rep *UserRepository) GetOne(query repository.UserQuery) (repository.UserDb
 		fmt.Fprintf(os.Stderr, "Bad request: %s\n", err.Error())
 		return repository.UserDbDto{}, err
 	}
+	Err
 	user := repository.UserDbToUserDbDto(userDb)
 	return user, nil
 }
