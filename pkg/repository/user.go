@@ -14,14 +14,16 @@ type UserRepository interface {
 	Edit(interface{})
 	GetList(query UserListQuery) UsersDbMetaDto
 	GetOne(query UserQuery) (UserDbDto, error)
+	SetNewState(stateUUID uuid.UUID) error
+	// TODO SetNewStateOnFly(state interface{}) error
 }
 
 type CreateUserDto struct {
-	Id     uuid.UUID    `db:"id"`
-	Name   string       `db:"name"`
-	Login  string       `db:"login"`
-	ChatId types.ChatId `db:"chat_id"`
-	// StateId string `db:"state_id"`
+	Id      uuid.UUID    `db:"id"`
+	Name    string       `db:"name"`
+	Login   string       `db:"login"`
+	ChatId  types.ChatId `db:"chat_id"`
+	StateId uuid.UUID    `db:"state_id"`
 }
 
 type UserDbDto struct {
@@ -29,7 +31,7 @@ type UserDbDto struct {
 	Name    string
 	Login   string
 	ChatId  types.ChatId
-	StateId string
+	StateId uuid.UUID
 }
 
 type UserDb struct {
@@ -37,7 +39,7 @@ type UserDb struct {
 	Name    sql.NullString `db:"name"`
 	Login   sql.NullString `db:"login"`
 	ChatId  types.ChatId   `db:"chat_id"`
-	StateId sql.NullString `db:"state_id"`
+	StateId uuid.UUID      `db:"state_id"`
 }
 
 type UsersDbMetaDto struct {
@@ -63,14 +65,12 @@ const (
 
 func UserDbToUserDbDto(userDb UserDb) UserDbDto {
 	user := UserDbDto{
-		Id:     userDb.Id,
-		ChatId: userDb.ChatId,
+		Id:      userDb.Id,
+		ChatId:  userDb.ChatId,
+		StateId: userDb.StateId,
 	}
 	if userDb.Name.Valid {
 		user.Name = userDb.Name.String
-	}
-	if userDb.StateId.Valid {
-		user.StateId = userDb.StateId.String
 	}
 	if userDb.Login.Valid {
 		user.Login = userDb.Login.String

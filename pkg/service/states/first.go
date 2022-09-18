@@ -7,6 +7,8 @@ import (
 	"github.com/TVBlackman1/telegram-go/pkg/repository"
 )
 
+const FIRST_STATE_NAME = "First state"
+
 type FirstState struct {
 	rep *repository.Repository
 }

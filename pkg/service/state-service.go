@@ -3,6 +3,7 @@ package service
 import (
 	"errors"
 	"fmt"
+	"log"
 
 	"github.com/TVBlackman1/telegram-go/pkg/lib/presenter/types"
 	"github.com/TVBlackman1/telegram-go/pkg/repository"
@@ -26,13 +27,13 @@ func NewStateService(rep *repository.Repository) *StateService {
 }
 
 func (stateService *StateService) GetCurrentState(message types.ReceivedMessage) {
-	stateService.rep.GetOne(repository.UserQuery{
+	// TODO rename stateService to common variant
+	stateService.rep.UserRepository.GetOne(repository.UserQuery{
 		ChatId: message.Sender.ChatId,
 	})
 }
 
-func (stateService *StateService) RegisterNewUser(sender types.Sender) types.MessageUnion {
-	var retMessage types.MessageUnion
+func (stateService *StateService) RegisterNewUser(sender types.Sender) (retMessage types.MessageUnion) {
 	newUser := repository.CreateUserDto{
 		Id:     uuid.New(),
 		Login:  sender.Login,
@@ -40,14 +41,41 @@ func (stateService *StateService) RegisterNewUser(sender types.Sender) types.Mes
 		ChatId: sender.ChatId,
 	}
 	_, err := stateService.rep.UserRepository.Add(newUser)
-	if err != nil && errors.Is(err, utils.ErrAlreadyExists) {
-		retMessage = types.MessageUnion{
-			Text: fmt.Sprintf("You are already using this bot, %s!", sender.Name),
+	if err != nil {
+		var textForSending string
+		// TODO change error processing
+		if errors.Is(err, utils.ErrAlreadyExists) {
+			textForSending = fmt.Sprintf("You are already using this bot, %s!", sender.Name)
+		} else {
+			textForSending = "Some error. Try again later"
 		}
-	} else {
 		retMessage = types.MessageUnion{
-			Text: fmt.Sprintf("Thanks for using bot, %s!", sender.Name),
+			Text: textForSending,
 		}
+		return
 	}
-	return retMessage
+	stateUUID, err := stateService.createNewDefaultState()
+	if err != nil {
+		retMessage = types.MessageUnion{
+			Text: "Some error. Try again later",
+		}
+		return
+	}
+	log.Fatal(stateUUID) // TODO continue working
+	retMessage = types.MessageUnion{
+		Text: fmt.Sprintf("Thanks for using bot, %s!", sender.Name),
+	}
+	return
+}
+
+func (stateService *StateService) createNewDefaultState() (uuid.UUID, error) {
+	// TODO change context to normal usability
+	defaultState := repository.CreateStateDto{
+		Id:      uuid.New(),
+		Name:    states.FIRST_STATE_NAME,
+		Context: "{}",
+	}
+
+	// TODO check why cant use := and must =
+	return stateService.rep.StateRepository.Add(defaultState)
 }

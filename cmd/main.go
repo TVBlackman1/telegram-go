@@ -1,7 +1,6 @@
 package main
 
 import (
-	"fmt"
 	"log"
 
 	"github.com/TVBlackman1/telegram-go/configs"
@@ -25,8 +24,7 @@ func main() {
 	}
 	repo, err := repo.NewRepository(dbConfig)
 	if err != nil {
-		panicContent := fmt.Sprintf("repo err: %s", err.Error())
-		panic(panicContent)
+		log.Fatalf("repo err: %s", err.Error())
 	}
 	defer repo.Close()
 	stateService := service.NewStateService(repo)

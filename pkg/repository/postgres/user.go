@@ -101,9 +101,36 @@ func (rep *UserRepository) GetOne(query repository.UserQuery) (repository.UserDb
 		fmt.Fprintf(os.Stderr, "Bad request: %s\n", err.Error())
 		return repository.UserDbDto{}, err
 	}
-	Err
 	user := repository.UserDbToUserDbDto(userDb)
 	return user, nil
+}
+
+func (rep *UserRepository) SetNewStateUUID(userUUID uuid.UUID, stateUUID uuid.UUID) error {
+	request := fmt.Sprintf(`
+	with ctx as (
+		select id
+		from %s
+		where id='%s'
+		limit 1
+	)
+	update %s as u
+	set state_id='%s'
+	from ctx
+	where ctx.id = u.id
+	returning u.id;
+	`,
+		repository.USERS_TABLENAME,
+		userUUID,
+		repository.USERS_TABLENAME,
+		stateUUID,
+	)
+	var uuidStr string
+	err := rep.db.Get(&uuidStr, request)
+	if err != nil {
+		fmt.Fprintln(os.Stderr, err.Error())
+		return err
+	}
+	return nil
 }
 
 func addListQueryConditions(logicBuilder *strings.Builder, query repository.UserListQuery) {

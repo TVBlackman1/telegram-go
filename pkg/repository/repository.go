@@ -1,22 +1,20 @@
 package repository
 
 import (
-	"fmt"
-	"os"
+	"log"
 
 	"github.com/jmoiron/sqlx"
 )
 
 type Repository struct {
-	Conn *sqlx.DB
-	UserRepository
-	StateRepository
+	Conn            *sqlx.DB
+	UserRepository  UserRepository
+	StateRepository StateRepository
 }
 
 func (repo *Repository) Close() {
 	err := repo.Conn.Close()
 	if err != nil {
-		fmt.Fprintf(os.Stderr, "Closing db error: %s", err.Error())
-		panic("Closing db panic")
+		log.Fatalf("Closing db error: %s", err.Error())
 	}
 }

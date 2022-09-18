@@ -6,5 +6,5 @@ type DbResponseCode int
 
 var (
 	ErrAlreadyExists  = errors.New("similar record already exists")
-	ErrDbNotConnected = errors.New("")
+	ErrDbNotConnected = errors.New("not connected to database")
 )
