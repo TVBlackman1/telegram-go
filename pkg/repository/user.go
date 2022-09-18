@@ -14,7 +14,7 @@ type UserRepository interface {
 	Edit(interface{})
 	GetList(query UserListQuery) UsersDbMetaDto
 	GetOne(query UserQuery) (UserDbDto, error)
-	SetNewState(stateUUID uuid.UUID) error
+	SetNewStateUUID(userUUID uuid.UUID, stateUUID uuid.UUID) error
 	// TODO SetNewStateOnFly(state interface{}) error
 }
 

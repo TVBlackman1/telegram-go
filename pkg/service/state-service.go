@@ -3,7 +3,6 @@ package service
 import (
 	"errors"
 	"fmt"
-	"log"
 
 	"github.com/TVBlackman1/telegram-go/pkg/lib/presenter/types"
 	"github.com/TVBlackman1/telegram-go/pkg/repository"
@@ -40,7 +39,7 @@ func (stateService *StateService) RegisterNewUser(sender types.Sender) (retMessa
 		Name:   sender.Name,
 		ChatId: sender.ChatId,
 	}
-	_, err := stateService.rep.UserRepository.Add(newUser)
+	userUUID, err := stateService.rep.UserRepository.Add(newUser)
 	if err != nil {
 		var textForSending string
 		// TODO change error processing
@@ -61,7 +60,13 @@ func (stateService *StateService) RegisterNewUser(sender types.Sender) (retMessa
 		}
 		return
 	}
-	log.Fatal(stateUUID) // TODO continue working
+	err = stateService.rep.UserRepository.SetNewStateUUID(userUUID, stateUUID)
+	if err != nil {
+		retMessage = types.MessageUnion{
+			Text: "Some error. Try again later",
+		}
+		return
+	}
 	retMessage = types.MessageUnion{
 		Text: fmt.Sprintf("Thanks for using bot, %s!", sender.Name),
 	}
