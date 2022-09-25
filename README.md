@@ -20,6 +20,8 @@ Target fsm model of user:
 
     b) show joke
 
+## Recomendations
+Use not default password for database in environment configuration for avoid kdevtmpfsi malware
 ## Run project
 
 #### a) Standard  Go application
