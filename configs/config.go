@@ -4,28 +4,31 @@ import (
 	"errors"
 	"fmt"
 	"os"
+	"reflect"
+	"strconv"
 
 	"github.com/spf13/viper"
 )
 
 type Config struct {
-	TELEGRAM_TOKEN  string
-	POSTGRES_USER   string
-	POSTGRES_PASS   string
-	POSTGRES_DBNAME string
-	POSTGRES_HOST   string
-	POSTGRES_PORT   int
+	TELEGRAM_TOKEN  string `mapstructure:"TELEGRAM_TOKEN"`
+	POSTGRES_USER   string `mapstructure:"POSTGRES_USER"`
+	POSTGRES_PASS   string `mapstructure:"POSTGRES_PASS"`
+	POSTGRES_DBNAME string `mapstructure:"POSTGRES_DBNAME"`
+	POSTGRES_HOST   string `mapstructure:"POSTGRES_HOST"`
+	POSTGRES_PORT   int    `mapstructure:"POSTGRES_PORT"`
 }
 
 func LoadConfig(path string) (config Config, err error) {
 	appEnvironmentVersion := AplicationEnv(os.Getenv(APP_ENV))
 
-	configFilename, err := getEnvMapping(appEnvironmentVersion)
+	environmentFilename, err := getEnvironmentFilename(appEnvironmentVersion)
 	if err != nil {
 		return
 	}
+
 	viper.AddConfigPath(path)
-	viper.SetConfigName(configFilename)
+	viper.SetConfigName(environmentFilename)
 	viper.SetConfigType("env")
 
 	viper.AutomaticEnv()
@@ -36,11 +39,44 @@ func LoadConfig(path string) (config Config, err error) {
 	}
 
 	err = viper.Unmarshal(&config)
-	fillEmptyEnvValuesByDefault(&config)
+	setEnvironmentValuesOnFly(&config)
+
+	setEmptyEnvironmentValuesByDefault(&config)
 	return
 }
 
-func fillEmptyEnvValuesByDefault(config *Config) {
+func setEnvironmentValuesOnFly(config *Config) (returnErr error) {
+	configType := reflect.TypeOf(*config)
+	currentConfig := reflect.ValueOf(config).Elem()
+	for i := 0; i < configType.NumField(); i++ {
+		field := configType.Field(i)
+		if environmentName, ok := field.Tag.Lookup("mapstructure"); ok {
+			foundEnvironment := os.Getenv(environmentName)
+			if foundEnvironment != "" {
+				currentField := currentConfig.Field(i)
+				if currentField.IsValid() && currentField.CanSet() {
+					if field.Type.Kind() == reflect.String {
+						currentField.SetString(foundEnvironment)
+					} else if field.Type.Kind() == reflect.Int {
+						stringedInteger, err := strconv.Atoi(foundEnvironment)
+						if err != nil {
+							returnErr = errors.New("Not corrected int type of config struct")
+							return
+						}
+						currentField.SetInt(int64(stringedInteger))
+					}
+				} else {
+					returnErr = errors.New("config field is not reachable")
+					return
+				}
+			}
+		}
+	}
+	return
+}
+
+func setEmptyEnvironmentValuesByDefault(config *Config) {
+	println(config.TELEGRAM_TOKEN)
 	if config.POSTGRES_DBNAME == "" {
 		config.POSTGRES_DBNAME = "postgres"
 	}
@@ -64,7 +100,7 @@ func fillEmptyEnvValuesByDefault(config *Config) {
 	}
 }
 
-func getEnvMapping(appEnvironmentVersion AplicationEnv) (configFilename string, resultError error) {
+func getEnvironmentFilename(appEnvironmentVersion AplicationEnv) (configFilename string, resultError error) {
 	switch appEnvironmentVersion {
 	case PRODUCTION_ENV:
 		configFilename = "production"
