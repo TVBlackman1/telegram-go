@@ -22,61 +22,41 @@ type Config struct {
 func LoadConfig(path string) (config Config, err error) {
 	appEnvironmentVersion := AplicationEnv(os.Getenv(APP_ENV))
 
-	environmentFilename, err := getEnvironmentFilename(appEnvironmentVersion)
+	filename, err := getEnvironmentFilename(appEnvironmentVersion)
 	if err != nil {
 		return
 	}
-
-	viper.AddConfigPath(path)
-	viper.SetConfigName(environmentFilename)
-	viper.SetConfigType("env")
-
-	viper.AutomaticEnv()
-
-	err = viper.ReadInConfig()
+	err = loadFromEnvFile(path, filename, &config)
 	if err != nil {
 		return
 	}
-
-	err = viper.Unmarshal(&config)
-	setEnvironmentValuesOnFly(&config)
-
+	err = setEnvironmentValuesOnFly(&config)
+	if err != nil {
+		return
+	}
 	setEmptyEnvironmentValuesByDefault(&config)
 	return
 }
 
-func setEnvironmentValuesOnFly(config *Config) (returnErr error) {
+func setEnvironmentValuesOnFly(config *Config) error {
 	configType := reflect.TypeOf(*config)
 	currentConfig := reflect.ValueOf(config).Elem()
 	for i := 0; i < configType.NumField(); i++ {
 		field := configType.Field(i)
-		if environmentName, ok := field.Tag.Lookup("mapstructure"); ok {
-			foundEnvironment := os.Getenv(environmentName)
-			if foundEnvironment != "" {
-				currentField := currentConfig.Field(i)
-				if currentField.IsValid() && currentField.CanSet() {
-					if field.Type.Kind() == reflect.String {
-						currentField.SetString(foundEnvironment)
-					} else if field.Type.Kind() == reflect.Int {
-						stringedInteger, err := strconv.Atoi(foundEnvironment)
-						if err != nil {
-							returnErr = errors.New("Not corrected int type of config struct")
-							return
-						}
-						currentField.SetInt(int64(stringedInteger))
-					}
-				} else {
-					returnErr = errors.New("config field is not reachable")
-					return
-				}
-			}
+		currentField := currentConfig.Field(i)
+		foundEnvironment, err := getEnvironmentValueByField(&field, "mapstructure")
+		if err != nil {
+			return err
 		}
+		if foundEnvironment == "" {
+			continue
+		}
+		setEnvironmentToField(&currentField, foundEnvironment)
 	}
-	return
+	return nil
 }
 
 func setEmptyEnvironmentValuesByDefault(config *Config) {
-	println(config.TELEGRAM_TOKEN)
 	if config.POSTGRES_DBNAME == "" {
 		config.POSTGRES_DBNAME = "postgres"
 	}
@@ -90,13 +70,7 @@ func setEmptyEnvironmentValuesByDefault(config *Config) {
 		config.POSTGRES_PORT = 5432
 	}
 	if config.POSTGRES_HOST == "" {
-		hostOnFly := os.Getenv("POSTGRES_HOST")
-		// TODO simplify, auto loading from env space
-		if hostOnFly != "" {
-			config.POSTGRES_HOST = hostOnFly
-		} else {
-			config.POSTGRES_HOST = "0.0.0.0"
-		}
+		config.POSTGRES_HOST = "0.0.0.0"
 	}
 }
 
@@ -113,4 +87,45 @@ func getEnvironmentFilename(appEnvironmentVersion AplicationEnv) (configFilename
 		resultError = errors.New(errorText)
 	}
 	return
+}
+
+func getEnvironmentValueByField(field *reflect.StructField, tag string) (string, error) {
+	environmentName, ok := field.Tag.Lookup(tag)
+	if !ok {
+		return "", errors.New("tag is not found")
+	}
+	return os.Getenv(environmentName), nil
+}
+
+func setEnvironmentToField(field *reflect.Value, newValue string) (retErr error) {
+	if !field.IsValid() || !field.CanSet() {
+		return errors.New("config field is not reachable")
+	}
+	switch kind := field.Type().Kind(); kind {
+	case reflect.String:
+		field.SetString(newValue)
+		retErr = nil
+	case reflect.Int:
+		stringedInteger, err := strconv.Atoi(newValue)
+		retErr = err
+		if err != nil {
+			return
+		}
+		field.SetInt(int64(stringedInteger))
+	default:
+		retErr = errors.New("unexpected type")
+	}
+	return
+}
+
+func loadFromEnvFile(path string, filename string, config *Config) error {
+	viper.AddConfigPath(path)
+	viper.SetConfigName(filename)
+	viper.SetConfigType("env")
+	viper.AutomaticEnv()
+	err := viper.ReadInConfig()
+	if err != nil {
+		return err
+	}
+	return viper.Unmarshal(&config)
 }
