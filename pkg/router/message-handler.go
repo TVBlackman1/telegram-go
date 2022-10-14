@@ -25,7 +25,7 @@ func (handler *Router) RouteByMessage(message types.ReceivedMessage) handlers.Co
 	if message.Content.Text == "/start" {
 		retHandler = handler.StartHandler
 	} else {
-		retHandler = handler.TestHandler
+		retHandler = handler.StatesHandler
 	}
 	return retHandler
 }
