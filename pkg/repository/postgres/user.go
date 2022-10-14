@@ -83,14 +83,21 @@ func (rep *UserRepository) Edit(interface{}) {
 }
 
 func (rep *UserRepository) GetOne(query repository.UserQuery) (repository.UserDbDto, error) {
-	selectedFields := "id, name, login, chat_id, state_id"
+	var selectedFieldsBuider strings.Builder
+	selectedFieldsBuider.WriteString(`users.id "id",
+	users.name "name",
+	users.login "login",
+	users.chat_id "chat_id",
+	users.state_id "state_id"`)
+
+	selectedFieldsBuider.WriteString(`, states.id "state.id", states.name "state.name" , states.context "state.context"`)
 	var logicBuilder strings.Builder
 	utils.AddPrimaryTableToBuilder(&logicBuilder, repository.USERS_TABLENAME)
 	addQueryConditions(&logicBuilder, query)
 
 	var request strings.Builder
 	request.WriteString("SELECT ")
-	request.WriteString(selectedFields)
+	request.WriteString(selectedFieldsBuider.String())
 	request.WriteRune(' ')
 	request.WriteString(logicBuilder.String())
 	utils.AddLimit1(&request)
@@ -140,6 +147,8 @@ func addListQueryConditions(logicBuilder *strings.Builder, query repository.User
 }
 
 func addQueryConditions(logicBuilder *strings.Builder, query repository.UserQuery) {
+	logicBuilder.WriteString(" LEFT JOIN states on states.id = users.state_id ")
+
 	alreadyWithCondition := false
 	if query.Login != "" {
 		addSQLKeywords(logicBuilder, alreadyWithCondition)

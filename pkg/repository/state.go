@@ -17,6 +17,12 @@ type CreateStateDto struct {
 	Context string    `db:"context"`
 }
 
+type StateDbDto struct {
+	Id      uuid.UUID
+	Name    string
+	Context string
+}
+
 const (
 	STATES_TABLENAME = "states"
 )

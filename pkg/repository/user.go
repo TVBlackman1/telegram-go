@@ -2,6 +2,7 @@ package repository
 
 import (
 	"database/sql"
+	"fmt"
 
 	"github.com/TVBlackman1/telegram-go/pkg/lib/presenter/types"
 	"github.com/TVBlackman1/telegram-go/pkg/repository/utils"
@@ -32,6 +33,7 @@ type UserDbDto struct {
 	Login   string
 	ChatId  types.ChatId
 	StateId uuid.UUID
+	State   StateDbDto
 }
 
 type UserDb struct {
@@ -40,6 +42,7 @@ type UserDb struct {
 	Login   sql.NullString `db:"login"`
 	ChatId  types.ChatId   `db:"chat_id"`
 	StateId uuid.UUID      `db:"state_id"`
+	State   StateDbDto     `db:"state"`
 }
 
 type UsersDbMetaDto struct {
@@ -68,6 +71,7 @@ func UserDbToUserDbDto(userDb UserDb) UserDbDto {
 		Id:      userDb.Id,
 		ChatId:  userDb.ChatId,
 		StateId: userDb.StateId,
+		State:   userDb.State,
 	}
 	if userDb.Name.Valid {
 		user.Name = userDb.Name.String
@@ -75,5 +79,6 @@ func UserDbToUserDbDto(userDb UserDb) UserDbDto {
 	if userDb.Login.Valid {
 		user.Login = userDb.Login.String
 	}
+	fmt.Printf("%+v", user)
 	return user
 }

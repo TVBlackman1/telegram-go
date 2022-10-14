@@ -25,15 +25,15 @@ func NewStateService(rep *repository.Repository) *StateService {
 	}
 }
 
-func (stateService *StateService) GetCurrentState(message types.ReceivedMessage) (uuid.UUID, error) {
+func (stateService *StateService) GetCurrentState(message types.ReceivedMessage) (repository.StateDbDto, error) {
 	// TODO rename stateService to common variant
 	user, err := stateService.rep.UserRepository.GetOne(repository.UserQuery{
 		ChatId: message.Sender.ChatId,
 	})
 	if err != nil {
-		return uuid.UUID{}, err
+		return repository.StateDbDto{}, err
 	}
-	return user.StateId, nil
+	return user.State, nil
 }
 
 func (stateService *StateService) RegisterNewUser(sender types.Sender) (retMessage types.MessageUnion) {

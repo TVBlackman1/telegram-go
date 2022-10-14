@@ -17,8 +17,7 @@ func NewStatesHandler(stateService *service.StateService) *StatesHandler {
 
 func (handler *StatesHandler) Process(message types.ReceivedMessage) types.MessageUnion {
 	currentState, _ := handler.stateService.GetCurrentState(message)
-	fmt.Println(currentState)
 	return types.MessageUnion{
-		Text: fmt.Sprintf("Your state is %s", currentState),
+		Text: fmt.Sprintf("Your state is %s", currentState.Name),
 	}
 }
