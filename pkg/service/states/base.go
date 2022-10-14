@@ -7,4 +7,6 @@ import (
 type UserState interface {
 	PreparePresentation() types.MessageUnion
 	ProcessUserInput(msg types.ReceivedMessage)
+	SetContext(msg types.ReceivedMessage, context interface{}) error
+	GetName() string
 }

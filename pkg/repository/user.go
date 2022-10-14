@@ -2,7 +2,6 @@ package repository
 
 import (
 	"database/sql"
-	"fmt"
 
 	"github.com/TVBlackman1/telegram-go/pkg/lib/presenter/types"
 	"github.com/TVBlackman1/telegram-go/pkg/repository/utils"
@@ -79,6 +78,5 @@ func UserDbToUserDbDto(userDb UserDb) UserDbDto {
 	if userDb.Login.Valid {
 		user.Login = userDb.Login.String
 	}
-	fmt.Printf("%+v", user)
 	return user
 }
