@@ -8,6 +8,8 @@ func GetStateProcessor(stateName string, rep *repository.Repository) (retState U
 		retState = NewFirstState(rep)
 	case SECOND_STATE_NAME:
 		retState = NewSecondState(rep)
+	case THIRD_STATE_NAME:
+		retState = NewThirdState(rep)
 	}
 	return
 }

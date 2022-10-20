@@ -25,6 +25,7 @@ func (state *SecondState) PreparePresentation() types.MessageUnion {
 }
 
 func (state *SecondState) ProcessUserInput(msg types.ReceivedMessage) {
+	// TODO refactor below
 	if msg.Content.Text == "1" {
 		// support errors
 		user, _ := state.rep.UserRepository.GetOne(repository.UserQuery{
@@ -37,6 +38,19 @@ func (state *SecondState) ProcessUserInput(msg types.ReceivedMessage) {
 		})
 		state.rep.UserRepository.SetNewStateUUID(user.Id, newStateId)
 		fmt.Println("User changed state to 1")
+	}
+	if msg.Content.Text == "3" {
+		// support errors
+		user, _ := state.rep.UserRepository.GetOne(repository.UserQuery{
+			ChatId: msg.Sender.ChatId,
+		})
+		newStateId, _ := state.rep.StateRepository.Add(repository.CreateStateDto{
+			Id:      uuid.New(),
+			Name:    THIRD_STATE_NAME,
+			Context: "{}",
+		})
+		state.rep.UserRepository.SetNewStateUUID(user.Id, newStateId)
+		fmt.Println("User changed state to 3")
 	}
 }
 
