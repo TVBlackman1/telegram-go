@@ -8,10 +8,10 @@ import (
 )
 
 type TestHandler struct {
-	stateService *service.StateService
+	stateService *service.UserService
 }
 
-func NewTestHandler(stateService *service.StateService) *TestHandler {
+func NewTestHandler(stateService *service.UserService) *TestHandler {
 	return &TestHandler{stateService}
 }
 

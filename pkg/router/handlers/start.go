@@ -6,10 +6,10 @@ import (
 )
 
 type StartHandler struct {
-	stateService *service.StateService
+	stateService *service.UserService
 }
 
-func NewStartHandler(stateService *service.StateService) *StartHandler {
+func NewStartHandler(stateService *service.UserService) *StartHandler {
 	return &StartHandler{stateService}
 }
 

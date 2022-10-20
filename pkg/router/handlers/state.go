@@ -3,21 +3,22 @@ package handlers
 import (
 	"github.com/TVBlackman1/telegram-go/pkg/lib/presenter/types"
 	"github.com/TVBlackman1/telegram-go/pkg/service"
-	"github.com/TVBlackman1/telegram-go/pkg/service/states"
 )
 
-type StatesHandler struct {
-	stateService *service.StateService
+type UserHandler struct {
+	userService *service.UserService
 }
 
-func NewStatesHandler(stateService *service.StateService) *StatesHandler {
-	return &StatesHandler{stateService}
+func NewUserHandler(stateService *service.UserService) *UserHandler {
+	return &UserHandler{stateService}
 }
 
-func (handler *StatesHandler) Process(message types.ReceivedMessage) types.MessageUnion {
-	currentState, _ := handler.stateService.GetCurrentState(message)
-	stateProcessor := states.DefineState(currentState.Name)
+func (handler *UserHandler) Process(message types.ReceivedMessage) types.MessageUnion {
+	chatId := message.Sender.ChatId
+	currentState, _ := handler.userService.GetCurrentState(chatId)
+	stateProcessor, _ := handler.userService.GetCurrentStateProcessor(currentState)
 	stateProcessor.SetContext(message, currentState.Id)
+	// TODO change ID to full state content in above method
 	stateProcessor.ProcessUserInput(message)
 	return stateProcessor.PreparePresentation()
 }

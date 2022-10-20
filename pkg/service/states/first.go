@@ -2,7 +2,6 @@ package states
 
 import (
 	"fmt"
-	"strings"
 
 	"github.com/TVBlackman1/telegram-go/pkg/lib/presenter/types"
 	"github.com/TVBlackman1/telegram-go/pkg/repository"
@@ -30,11 +29,23 @@ func (state *FirstState) ProcessUserInput(msg types.ReceivedMessage) {
 	if msg.Content.Text == "2" {
 		fmt.Printf("User %s sent: %s", msg.Sender.Login, msg.Content.Text)
 	}
+	if msg.Content.Text == "To2" {
+		// support errors
+		user, _ := state.rep.UserRepository.GetOne(repository.UserQuery{
+			ChatId: msg.Sender.ChatId,
+		})
+		newStateId, _ := state.rep.StateRepository.Add(repository.CreateStateDto{
+			Id:      uuid.New(),
+			Name:    SECOND_STATE_NAME,
+			Context: "{}",
+		})
+		state.rep.UserRepository.SetNewStateUUID(user.Id, newStateId)
+		fmt.Println("User changed state to 2")
+	}
 }
 
 func (state *FirstState) SetContext(msg types.ReceivedMessage, context interface{}) error {
 	stateId := fmt.Sprintf("%v", context)
-	stateId = strings.ReplaceAll(stateId, "-", "")
 	uuidId, err := uuid.Parse(stateId)
 	if err != nil {
 		return err

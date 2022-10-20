@@ -11,24 +11,17 @@ import (
 	"github.com/google/uuid"
 )
 
-type StateService struct {
-	FirstState  *states.FirstState
-	SecondState *states.SecondState
-	rep         *repository.Repository
+type UserService struct {
+	rep *repository.Repository
 }
 
-func NewStateService(rep *repository.Repository) *StateService {
-	return &StateService{
-		FirstState:  states.NewFirstState(rep),
-		SecondState: states.NewSecondState(rep),
-		rep:         rep,
-	}
+func NewUserService(rep *repository.Repository) *UserService {
+	return &UserService{rep}
 }
 
-func (stateService *StateService) GetCurrentState(message types.ReceivedMessage) (repository.StateDbDto, error) {
-	// TODO rename stateService to common variant
-	user, err := stateService.rep.UserRepository.GetOne(repository.UserQuery{
-		ChatId: message.Sender.ChatId,
+func (userService *UserService) GetCurrentState(chatId types.ChatId) (repository.StateDbDto, error) {
+	user, err := userService.rep.UserRepository.GetOne(repository.UserQuery{
+		ChatId: chatId,
 	})
 	if err != nil {
 		return repository.StateDbDto{}, err
@@ -36,14 +29,19 @@ func (stateService *StateService) GetCurrentState(message types.ReceivedMessage)
 	return user.State, nil
 }
 
-func (stateService *StateService) RegisterNewUser(sender types.Sender) (retMessage types.MessageUnion) {
+func (userService *UserService) GetCurrentStateProcessor(currentState repository.StateDbDto) (states.UserState, error) {
+	stateProcessor := states.GetStateProcessor(currentState.Name, userService.rep)
+	return stateProcessor, nil
+}
+
+func (userService *UserService) RegisterNewUser(sender types.Sender) (retMessage types.MessageUnion) {
 	newUser := repository.CreateUserDto{
 		Id:     uuid.New(),
 		Login:  sender.Login,
 		Name:   sender.Name,
 		ChatId: sender.ChatId,
 	}
-	userUUID, err := stateService.rep.UserRepository.Add(newUser)
+	userUUID, err := userService.rep.UserRepository.Add(newUser)
 	if err != nil {
 		var textForSending string
 		// TODO change error processing
@@ -57,14 +55,14 @@ func (stateService *StateService) RegisterNewUser(sender types.Sender) (retMessa
 		}
 		return
 	}
-	stateUUID, err := stateService.createNewDefaultState()
+	stateUUID, err := userService.createNewDefaultState()
 	if err != nil {
 		retMessage = types.MessageUnion{
 			Text: "Some error. Try again later",
 		}
 		return
 	}
-	err = stateService.rep.UserRepository.SetNewStateUUID(userUUID, stateUUID)
+	err = userService.rep.UserRepository.SetNewStateUUID(userUUID, stateUUID)
 	if err != nil {
 		retMessage = types.MessageUnion{
 			Text: "Some error. Try again later",
@@ -77,7 +75,7 @@ func (stateService *StateService) RegisterNewUser(sender types.Sender) (retMessa
 	return
 }
 
-func (stateService *StateService) createNewDefaultState() (uuid.UUID, error) {
+func (userService *UserService) createNewDefaultState() (uuid.UUID, error) {
 	// TODO change context to normal usability
 	defaultState := repository.CreateStateDto{
 		Id:      uuid.New(),
@@ -86,5 +84,5 @@ func (stateService *StateService) createNewDefaultState() (uuid.UUID, error) {
 	}
 
 	// TODO check why cant use := and must =
-	return stateService.rep.StateRepository.Add(defaultState)
+	return userService.rep.StateRepository.Add(defaultState)
 }

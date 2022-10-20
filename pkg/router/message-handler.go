@@ -7,16 +7,16 @@ import (
 )
 
 type Router struct {
-	StartHandler  *handlers.StartHandler
-	StatesHandler *handlers.StatesHandler
-	TestHandler   *handlers.TestHandler
+	StartHandler *handlers.StartHandler
+	UserHandler  *handlers.UserHandler
+	TestHandler  *handlers.TestHandler
 }
 
-func NewRouter(stateService *service.StateService) *Router {
+func NewRouter(userService *service.UserService) *Router {
 	return &Router{
-		StartHandler:  handlers.NewStartHandler(stateService),
-		StatesHandler: handlers.NewStatesHandler(stateService),
-		TestHandler:   handlers.NewTestHandler(stateService),
+		StartHandler: handlers.NewStartHandler(userService),
+		UserHandler:  handlers.NewUserHandler(userService),
+		TestHandler:  handlers.NewTestHandler(userService),
 	}
 }
 
@@ -25,7 +25,7 @@ func (handler *Router) RouteByMessage(message types.ReceivedMessage) handlers.Co
 	if message.Content.Text == "/start" {
 		retHandler = handler.StartHandler
 	} else {
-		retHandler = handler.StatesHandler
+		retHandler = handler.UserHandler
 	}
 	return retHandler
 }

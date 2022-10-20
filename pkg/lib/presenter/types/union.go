@@ -9,9 +9,9 @@ type MessageUnion struct {
 type ChatId int
 
 type Sender struct {
-	ChatId
-	Name  string
-	Login string
+	ChatId ChatId
+	Name   string
+	Login  string
 }
 type ReceivedMessage struct {
 	Sender  Sender
