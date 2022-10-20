@@ -11,8 +11,10 @@ import (
 const FIRST_STATE_NAME = "First state"
 
 type FirstState struct {
-	rep     *repository.Repository
-	stateId uuid.UUID
+	rep          *repository.Repository
+	stateId      uuid.UUID
+	toNewState   bool
+	newStateInfo string
 }
 
 func NewFirstState(rep *repository.Repository) *FirstState {
@@ -20,6 +22,11 @@ func NewFirstState(rep *repository.Repository) *FirstState {
 }
 
 func (state *FirstState) PreparePresentation() types.MessageUnion {
+	if state.toNewState {
+		return types.MessageUnion{
+			Text: state.newStateInfo,
+		}
+	}
 	return types.MessageUnion{
 		Text: fmt.Sprintf("Your state is %s (%s)", FIRST_STATE_NAME, state.stateId),
 	}
@@ -37,7 +44,8 @@ func (state *FirstState) ProcessUserInput(msg types.ReceivedMessage) {
 			Context: "{}",
 		})
 		state.rep.UserRepository.SetNewStateUUID(user.Id, newStateId)
-		fmt.Println("User changed state to 2")
+		state.toNewState = true
+		state.newStateInfo = "Transfer to second state"
 	}
 }
 

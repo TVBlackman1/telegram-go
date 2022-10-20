@@ -11,16 +11,23 @@ import (
 const SECOND_STATE_NAME = "Second state"
 
 type SecondState struct {
-	rep *repository.Repository
+	rep          *repository.Repository
+	toNewState   bool
+	newStateInfo string
 }
 
 func NewSecondState(rep *repository.Repository) *SecondState {
-	return &SecondState{rep}
+	return &SecondState{rep: rep}
 }
 
 func (state *SecondState) PreparePresentation() types.MessageUnion {
+	if state.toNewState {
+		return types.MessageUnion{
+			Text: state.newStateInfo,
+		}
+	}
 	return types.MessageUnion{
-		Text: "???",
+		Text: "this is second state",
 	}
 }
 
@@ -37,7 +44,8 @@ func (state *SecondState) ProcessUserInput(msg types.ReceivedMessage) {
 			Context: "{}",
 		})
 		state.rep.UserRepository.SetNewStateUUID(user.Id, newStateId)
-		fmt.Println("User changed state to 1")
+		state.toNewState = true
+		state.newStateInfo = "Transfer to first state"
 	}
 	if msg.Content.Text == "3" {
 		// support errors
@@ -50,7 +58,8 @@ func (state *SecondState) ProcessUserInput(msg types.ReceivedMessage) {
 			Context: "{}",
 		})
 		state.rep.UserRepository.SetNewStateUUID(user.Id, newStateId)
-		fmt.Println("User changed state to 3")
+		state.toNewState = true
+		state.newStateInfo = "Transfer to third state"
 	}
 }
 

@@ -13,19 +13,18 @@ const THIRD_STATE_NAME = "Third state"
 type ThirdState struct {
 	rep          *repository.Repository
 	jokeToAnswer bool
+	toNewState   bool
+	newStateInfo string
 }
 
 func NewThirdState(rep *repository.Repository) *ThirdState {
-	return &ThirdState{
-		rep:          rep,
-		jokeToAnswer: false,
-	}
+	return &ThirdState{rep: rep}
 }
 
 func (state *ThirdState) PreparePresentation() types.MessageUnion {
-	if state.jokeToAnswer {
+	if state.toNewState {
 		return types.MessageUnion{
-			Text: "Смешная шутка не готова",
+			Text: state.newStateInfo,
 		}
 	}
 	return types.MessageUnion{
@@ -45,9 +44,9 @@ func (state *ThirdState) ProcessUserInput(msg types.ReceivedMessage) {
 			Context: "{}",
 		})
 		state.rep.UserRepository.SetNewStateUUID(user.Id, newStateId)
-		fmt.Println("User changed state to 2")
-	} else {
-		state.jokeToAnswer = true
+		state.toNewState = true
+		state.newStateInfo = "Transfer to second state"
+
 	}
 }
 
