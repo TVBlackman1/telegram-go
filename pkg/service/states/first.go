@@ -27,9 +27,6 @@ func (state *FirstState) PreparePresentation() types.MessageUnion {
 
 func (state *FirstState) ProcessUserInput(msg types.ReceivedMessage) {
 	if msg.Content.Text == "2" {
-		fmt.Printf("User %s sent: %s", msg.Sender.Login, msg.Content.Text)
-	}
-	if msg.Content.Text == "To2" {
 		// support errors
 		user, _ := state.rep.UserRepository.GetOne(repository.UserQuery{
 			ChatId: msg.Sender.ChatId,

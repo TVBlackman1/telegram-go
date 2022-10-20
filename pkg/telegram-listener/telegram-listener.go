@@ -2,8 +2,8 @@ package telegramlistener
 
 import (
 	"log"
-	"reflect"
 
+	"github.com/TVBlackman1/telegram-go/pkg/lib"
 	"github.com/TVBlackman1/telegram-go/pkg/lib/presenter"
 	"github.com/TVBlackman1/telegram-go/pkg/lib/presenter/types"
 	"github.com/TVBlackman1/telegram-go/pkg/router"
@@ -18,7 +18,9 @@ type TgWorkspace struct {
 
 func NewTelegramBot(token string, router *router.Router) *TgWorkspace {
 	return &TgWorkspace{
-		token, router, nil,
+		token:  token,
+		router: router,
+		bot:    nil,
 	}
 }
 
@@ -44,7 +46,7 @@ func (workspace *TgWorkspace) reactOnMessage(message *tgbotapi.Message) {
 	receivedMessage := workspace.buildReceivedMessage(message)
 	usingHandler := workspace.router.RouteByMessage(receivedMessage)
 	answer := usingHandler.Process(receivedMessage)
-	if reflect.ValueOf(answer).IsZero() {
+	if empty, _ := lib.IsEmptyStruct(answer); empty {
 		return
 	}
 	msg := tgbotapi.NewMessage(message.Chat.ID, "")

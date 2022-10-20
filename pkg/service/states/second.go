@@ -25,10 +25,7 @@ func (state *SecondState) PreparePresentation() types.MessageUnion {
 }
 
 func (state *SecondState) ProcessUserInput(msg types.ReceivedMessage) {
-	if msg.Content.Text == "2" {
-		state.action(msg.Sender.Login, msg.Content.Text)
-	}
-	if msg.Content.Text == "To1" {
+	if msg.Content.Text == "1" {
 		// support errors
 		user, _ := state.rep.UserRepository.GetOne(repository.UserQuery{
 			ChatId: msg.Sender.ChatId,

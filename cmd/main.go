@@ -27,8 +27,8 @@ func main() {
 		log.Fatalf("repo err: %s", err.Error())
 	}
 	defer repo.Close()
-	stateService := service.NewUserService(repo)
-	router := router.NewRouter(stateService)
+	userService := service.NewUserService(repo)
+	router := router.NewRouter(userService)
 	bot := telegramlistener.NewTelegramBot(config.TELEGRAM_TOKEN, router)
 	bot.Run()
 }
