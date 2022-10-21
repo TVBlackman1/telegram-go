@@ -12,11 +12,13 @@ import (
 )
 
 type UserService struct {
-	rep *repository.Repository
+	rep          *repository.Repository
+	stateContext *states.CommonStateContext
 }
 
 func NewUserService(rep *repository.Repository) *UserService {
-	return &UserService{rep}
+	stateContext := states.NewCommonStateContext(rep)
+	return &UserService{rep, stateContext}
 }
 
 func (userService *UserService) GetCurrentState(chatId types.ChatId) (repository.StateDbDto, error) {
@@ -30,7 +32,7 @@ func (userService *UserService) GetCurrentState(chatId types.ChatId) (repository
 }
 
 func (userService *UserService) GetCurrentStateProcessor(currentState repository.StateDbDto) (states.UserState, error) {
-	stateProcessor := states.GetStateProcessor(currentState.Name, userService.rep)
+	stateProcessor := states.GetStateProcessor(currentState.Name, userService.stateContext)
 	return stateProcessor, nil
 }
 

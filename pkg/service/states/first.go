@@ -4,21 +4,20 @@ import (
 	"fmt"
 
 	"github.com/TVBlackman1/telegram-go/pkg/lib/presenter/types"
-	"github.com/TVBlackman1/telegram-go/pkg/repository"
 	"github.com/google/uuid"
 )
 
 const FIRST_STATE_NAME = "First state"
 
 type FirstState struct {
-	rep          *repository.Repository
-	stateId      uuid.UUID
-	toNewState   bool
-	newStateInfo string
+	commonContext *CommonStateContext
+	stateId       uuid.UUID
+	toNewState    bool
+	newStateInfo  string
 }
 
-func NewFirstState(rep *repository.Repository) *FirstState {
-	return &FirstState{rep: rep}
+func NewFirstState(context *CommonStateContext) *FirstState {
+	return &FirstState{commonContext: context}
 }
 
 func (state *FirstState) PreparePresentation() types.MessageUnion {
@@ -34,16 +33,10 @@ func (state *FirstState) PreparePresentation() types.MessageUnion {
 
 func (state *FirstState) ProcessUserInput(msg types.ReceivedMessage) {
 	if msg.Content.Text == "2" {
-		// support errors
-		user, _ := state.rep.UserRepository.GetOne(repository.UserQuery{
-			ChatId: msg.Sender.ChatId,
-		})
-		newStateId, _ := state.rep.StateRepository.Add(repository.CreateStateDto{
-			Id:      uuid.New(),
-			Name:    SECOND_STATE_NAME,
-			Context: "{}",
-		})
-		state.rep.UserRepository.SetNewStateUUID(user.Id, newStateId)
+		chatId := msg.Sender.ChatId
+		stateSwitcher := state.commonContext.StateSwitcher
+		newState := StateOnFlyDto{SECOND_STATE_NAME, "{}"}
+		stateSwitcher.TransferToNewStateByChatId(chatId, newState)
 		state.toNewState = true
 		state.newStateInfo = "Transfer to second state"
 	}

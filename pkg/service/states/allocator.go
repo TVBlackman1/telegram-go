@@ -1,15 +1,13 @@
 package states
 
-import "github.com/TVBlackman1/telegram-go/pkg/repository"
-
-func GetStateProcessor(stateName string, rep *repository.Repository) (retState UserState) {
+func GetStateProcessor(stateName string, stateContext *CommonStateContext) (retState UserState) {
 	switch stateName {
 	case FIRST_STATE_NAME:
-		retState = NewFirstState(rep)
+		retState = NewFirstState(stateContext)
 	case SECOND_STATE_NAME:
-		retState = NewSecondState(rep)
+		retState = NewSecondState(stateContext)
 	case THIRD_STATE_NAME:
-		retState = NewThirdState(rep)
+		retState = NewThirdState(stateContext)
 	}
 	return
 }
