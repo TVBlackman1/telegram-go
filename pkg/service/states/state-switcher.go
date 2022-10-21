@@ -11,20 +11,6 @@ type StateOnFlyDto struct {
 	Context string
 }
 
-// func SetStateByUserId(userId uuid.UUID) {
-
-// }
-
-// func SetStateByChatId(chatId types.ChatId) {
-// 	user, _ := state.rep.UserRepository.GetOne(repository.UserQuery{
-// 		ChatId: msg.Sender.ChatId,
-// 	})
-// }
-
-// func TransferToNewState(state UserState) {
-
-// }
-
 type StateSwitcher struct {
 	rep *repository.Repository
 }
