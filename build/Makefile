@@ -11,7 +11,7 @@ ORANGE=\033[33m
 COMMON_COLOR=\033[0m
 
 
-notify_about_APP_ENV = $(if $(1),echo -e "${GREEN}project environment: $(1)${COMMON_COLOR}",echo -e "\${ORANGE}WARNING: APP_ENV is empty${COMMON_COLOR}")
+notify_about_APP_ENV = $(if $(1),printf "${GREEN}project environment: $(1)${COMMON_COLOR}\n",printf "\${ORANGE}WARNING: APP_ENV is empty${COMMON_COLOR}\n")
 
 run_production: export APP_ENV=${PRODUCTION_ENV}
 run_develop: export APP_ENV=${DEVELOP_ENV}
