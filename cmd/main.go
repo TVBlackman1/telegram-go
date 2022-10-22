@@ -30,5 +30,12 @@ func main() {
 	userService := service.NewUserService(repo)
 	router := router.NewRouter(userService)
 	bot := telegramlistener.NewTelegramBot(config.TELEGRAM_TOKEN, router)
+
+	// go func() {
+	// 	for {
+	// 		time.Sleep(3 * time.Second)
+	// 		bot.NotifyUser(537172348)
+	// 	}
+	// }()
 	bot.Run()
 }

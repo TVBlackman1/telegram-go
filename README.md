@@ -1,4 +1,4 @@
-## Description
+# Description
 
 Go application with telegram bot. Consider it like test example.
 
@@ -20,12 +20,46 @@ Target fsm model of user:
 
     b) show joke
 
-## Recomendations
-Use not default password for database in environment configuration for avoid kdevtmpfsi malware
-## Run project
 
-#### a) Standard  Go application
-1. Create .development.env or .production.env file by example or use python script in /scripts. Replace values if necessary
+# Content
+
+* [Architecture](#architecture)
+* [Realized concept](#realized-concept)
+* [Run project](#run-project)
+* [Recommendations](#recommendations)
+
+# Architecture
+Project has next architecture:
+<p align="center">
+<img src="./readmectx/tgbot.png"
+  alt="Arch image"
+  width="679" height="708">
+</p>
+
+# Realized concept
+Created fsm model with 3 states:
+1) First state
+
+    a) to second state
+
+2) Second state
+
+    a) to first state
+
+    b) to third state
+
+3) Third state
+
+    a) to first state
+
+    b) show joke
+
+# Recommendations
+Use not default password for database in environment configuration for avoid kdevtmpfsi malware
+# Run project
+
+## Standard  Go application
+1. Create `develop.env` or `production.env` file by example or use python script in /scripts. Replace values if necessary
 ```shell
 python git_clone_init.py
 ```
@@ -44,9 +78,9 @@ or for production version
 make run_production
 ```
 
-#### b) Docker container
+## Docker container
 Just for develop version now
-1. Create .development.env or .production.env file by example or use python script in /scripts
+1. Create `develop.env` or `production.env` file by example or use python script in /scripts
 ```shell
 python git_clone_init.py
 ```

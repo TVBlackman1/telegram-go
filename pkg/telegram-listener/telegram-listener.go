@@ -54,6 +54,18 @@ func (workspace *TgWorkspace) reactOnMessage(message *tgbotapi.Message) {
 	workspace.bot.Send(msg)
 }
 
+func (workspace *TgWorkspace) NotifyUser(chatId types.ChatId) {
+	msg := tgbotapi.NewMessage(int64(chatId), "")
+	presenter.Present(&msg, types.MessageUnion{
+		Text: "Timer signal",
+	})
+	workspace.bot.Send(msg)
+}
+
+func (workspace *TgWorkspace) NotifyUserWithContext(chatId types.ChatId, context interface{}) {
+	panic("not implemented")
+}
+
 func (workspace *TgWorkspace) buildReceivedMessage(message *tgbotapi.Message) types.ReceivedMessage {
 	chatId := types.ChatId(message.Chat.ID)
 	sender := types.Sender{

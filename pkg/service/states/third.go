@@ -39,7 +39,6 @@ func (state *ThirdState) ProcessUserInput(msg types.ReceivedMessage) {
 		stateSwitcher.TransferToNewStateByChatId(chatId, newState)
 		state.toNewState = true
 		state.newStateInfo = "Transfer to second state"
-
 	}
 }
 

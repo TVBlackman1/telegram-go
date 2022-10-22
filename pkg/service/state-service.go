@@ -57,34 +57,10 @@ func (userService *UserService) RegisterNewUser(sender types.Sender) (retMessage
 		}
 		return
 	}
-	stateUUID, err := userService.createNewDefaultState()
-	if err != nil {
-		retMessage = types.MessageUnion{
-			Text: "Some error. Try again later",
-		}
-		return
-	}
-	err = userService.rep.UserRepository.SetNewStateUUID(userUUID, stateUUID)
-	if err != nil {
-		retMessage = types.MessageUnion{
-			Text: "Some error. Try again later",
-		}
-		return
-	}
+	defaultState := states.StateOnFlyDto{Name: states.FIRST_STATE_NAME, Context: "{}"}
+	userService.stateContext.StateSwitcher.TransferToNewState(userUUID, defaultState)
 	retMessage = types.MessageUnion{
 		Text: fmt.Sprintf("Thanks for using bot, %s!", sender.Name),
 	}
 	return
-}
-
-func (userService *UserService) createNewDefaultState() (uuid.UUID, error) {
-	// TODO change context to normal usability
-	defaultState := repository.CreateStateDto{
-		Id:      uuid.New(),
-		Name:    states.FIRST_STATE_NAME,
-		Context: "{}",
-	}
-
-	// TODO check why cant use := and must =
-	return userService.rep.StateRepository.Add(defaultState)
 }

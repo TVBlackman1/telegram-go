@@ -20,5 +20,6 @@ func (handler *UserHandler) Process(message types.ReceivedMessage) types.Message
 	stateProcessor.SetContext(message, currentState.Id)
 	// TODO change ID to full state content in above method
 	stateProcessor.ProcessUserInput(message)
+	// TODO several times sends message to processor
 	return stateProcessor.PreparePresentation()
 }
