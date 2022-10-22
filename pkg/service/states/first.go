@@ -44,7 +44,9 @@ func (state *FirstState) ProcessUserInput(msg types.ReceivedMessage) {
 }
 
 func (state *FirstState) ProcessSystemInvoke(chatId types.ChatId) {
-	panic("not implemented")
+	state.queueMessages = append(state.queueMessages, types.MessageUnion{
+		Text: "Exec: system invoke of first state",
+	})
 }
 
 func (state *FirstState) GetBotMessages() []types.MessageUnion {

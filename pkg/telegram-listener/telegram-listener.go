@@ -3,7 +3,6 @@ package telegramlistener
 import (
 	"log"
 
-	"github.com/TVBlackman1/telegram-go/pkg/lib"
 	"github.com/TVBlackman1/telegram-go/pkg/lib/presenter"
 	"github.com/TVBlackman1/telegram-go/pkg/lib/presenter/types"
 	"github.com/TVBlackman1/telegram-go/pkg/notifier"
@@ -52,28 +51,31 @@ func (workspace *TgWorkspace) reactOnMessage(message *tgbotapi.Message) {
 	usingHandler := workspace.router.RouteByMessage(receivedMessage)
 	result := usingHandler.Process(receivedMessage)
 	for _, answer := range result.Messages {
-		if empty, _ := lib.IsEmptyStruct(answer); empty {
-			return
-		} // TODO remove check
 		msg := tgbotapi.NewMessage(message.Chat.ID, "")
 		presenter.Present(&msg, answer)
 		workspace.bot.Send(msg) // TODO add delay with condition
 	}
 	for _, notification := range result.Notifications {
 		// TODO global change, with timers, etc
-		workspace.NotifyUser(notification.ChatId)
+		workspace.SendAutoMessage(notification.ChatId)
 	}
 }
 
-func (workspace *TgWorkspace) NotifyUser(chatId types.ChatId) {
-	msg := tgbotapi.NewMessage(int64(chatId), "")
-	presenter.Present(&msg, types.MessageUnion{
-		Text: "Timer signal",
-	})
-	workspace.bot.Send(msg)
+func (workspace *TgWorkspace) SendAutoMessage(chatId types.ChatId) {
+	systemHandler := workspace.router.GetSystemHandler()
+	result := systemHandler.Process(chatId)
+	for _, answer := range result.Messages {
+		msg := tgbotapi.NewMessage(int64(chatId), "")
+		presenter.Present(&msg, answer)
+		workspace.bot.Send(msg) // TODO add delay with condition
+	}
+	for _, notification := range result.Notifications {
+		// TODO global change, with timers, etc
+		workspace.SendAutoMessage(notification.ChatId)
+	}
 }
 
-func (workspace *TgWorkspace) NotifyUserWithContext(chatId types.ChatId, context interface{}) {
+func (workspace *TgWorkspace) SendAutoMessageWithContext(chatId types.ChatId, context interface{}) {
 	panic("not implemented")
 }
 
@@ -81,7 +83,7 @@ func (workspace *TgWorkspace) RunNotificator() {
 	notificator := workspace.notifier.GetNotificator()
 	for notification := range notificator {
 		chatId := notification.ChatId
-		workspace.NotifyUser(chatId)
+		workspace.SendAutoMessage(chatId)
 	}
 }
 

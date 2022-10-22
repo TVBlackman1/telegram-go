@@ -6,7 +6,6 @@ import (
 )
 
 type UserState interface {
-	// PreparePresentation() types.MessageUnion
 	ProcessUserInput(msg types.ReceivedMessage)
 	ProcessSystemInvoke(chatId types.ChatId)
 	GetBotMessages() []types.MessageUnion
