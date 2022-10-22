@@ -47,6 +47,13 @@ func (state *FirstState) ProcessSystemInvoke(chatId types.ChatId) {
 	state.queueMessages = append(state.queueMessages, types.MessageUnion{
 		Text: "Exec: system invoke of first state",
 	})
+	state.queueMessages = append(state.queueMessages, types.MessageUnion{
+		Text: "Pick desired state",
+		Keyboard: types.Keyboard{
+			[]types.ButtonContent{"1", "2"},
+			[]types.ButtonContent{"3"},
+		},
+	})
 }
 
 func (state *FirstState) GetBotMessages() []types.MessageUnion {

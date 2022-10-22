@@ -2,7 +2,6 @@ package presenter
 
 import (
 	"errors"
-	"reflect"
 
 	"github.com/TVBlackman1/telegram-go/pkg/lib/presenter/types"
 	tgbotapi "github.com/go-telegram-bot-api/telegram-bot-api/v5"
@@ -12,7 +11,7 @@ func Present(msg *tgbotapi.MessageConfig, data types.MessageUnion) error {
 	if data.Text != "" {
 		msg.Text = data.Text
 	}
-	if !reflect.ValueOf(data.Keyboard).IsZero() {
+	if len(data.Keyboard) > 0 && len(data.Text) > 0 {
 		replyKeyboard := tgbotapi.NewReplyKeyboard()
 		for i := 0; i < len(data.Keyboard); i++ {
 			replyKeyboard.Keyboard = append(replyKeyboard.Keyboard, tgbotapi.NewKeyboardButtonRow())
@@ -23,6 +22,7 @@ func Present(msg *tgbotapi.MessageConfig, data types.MessageUnion) error {
 				replyKeyboard.Keyboard[len(replyKeyboard.Keyboard)-1] = lastRow
 			}
 		}
+		msg.ReplyMarkup = replyKeyboard
 	}
 	if len(data.Media) > 0 {
 		return errors.New("media is not supported")
