@@ -4,6 +4,7 @@ import (
 	"fmt"
 
 	"github.com/TVBlackman1/telegram-go/pkg/lib/presenter/types"
+	"github.com/TVBlackman1/telegram-go/pkg/notifier"
 	"github.com/google/uuid"
 )
 
@@ -12,13 +13,15 @@ const FIRST_STATE_NAME = "First state"
 type FirstState struct {
 	commonContext *CommonStateContext
 	stateId       uuid.UUID
-	queueMessages []types.MessageUnion // TODO change to chan notifier.NotifierContext
+	queueMessages []types.MessageUnion
+	notifications []notifier.NotifierContext
 }
 
 func NewFirstState(context *CommonStateContext) *FirstState {
 	return &FirstState{
 		commonContext: context,
 		queueMessages: []types.MessageUnion{},
+		notifications: []notifier.NotifierContext{},
 	}
 }
 
@@ -46,6 +49,10 @@ func (state *FirstState) ProcessSystemInvoke(chatId types.ChatId) {
 
 func (state *FirstState) GetBotMessages() []types.MessageUnion {
 	return state.queueMessages
+}
+
+func (state *FirstState) GetNotifications() []notifier.NotifierContext {
+	return state.notifications
 }
 
 func (state *FirstState) ProcessContextedSystemInvoke(chatId types.ChatId, context interface{}) {

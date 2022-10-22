@@ -4,6 +4,7 @@ import (
 	"fmt"
 
 	"github.com/TVBlackman1/telegram-go/pkg/lib/presenter/types"
+	"github.com/TVBlackman1/telegram-go/pkg/notifier"
 )
 
 const THIRD_STATE_NAME = "Third state"
@@ -11,11 +12,16 @@ const THIRD_STATE_NAME = "Third state"
 type ThirdState struct {
 	commonContext *CommonStateContext
 	jokeToAnswer  bool
-	queueMessages []types.MessageUnion // TODO change to chan notifier.NotifierContext
+	queueMessages []types.MessageUnion
+	notifications []notifier.NotifierContext
 }
 
 func NewThirdState(context *CommonStateContext) *ThirdState {
-	return &ThirdState{commonContext: context}
+	return &ThirdState{
+		commonContext: context,
+		queueMessages: []types.MessageUnion{},
+		notifications: []notifier.NotifierContext{},
+	}
 }
 
 func (state *ThirdState) ProcessUserInput(msg types.ReceivedMessage) {
@@ -37,6 +43,10 @@ func (state *ThirdState) ProcessSystemInvoke(chatId types.ChatId) {
 
 func (state *ThirdState) GetBotMessages() []types.MessageUnion {
 	return state.queueMessages
+}
+
+func (state *ThirdState) GetNotifications() []notifier.NotifierContext {
+	return state.notifications
 }
 
 func (state *ThirdState) ProcessContextedSystemInvoke(chatId types.ChatId, context interface{}) {

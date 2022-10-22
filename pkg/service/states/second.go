@@ -4,6 +4,7 @@ import (
 	"fmt"
 
 	"github.com/TVBlackman1/telegram-go/pkg/lib/presenter/types"
+	"github.com/TVBlackman1/telegram-go/pkg/notifier"
 )
 
 const SECOND_STATE_NAME = "Second state"
@@ -11,10 +12,15 @@ const SECOND_STATE_NAME = "Second state"
 type SecondState struct {
 	commonContext *CommonStateContext
 	queueMessages []types.MessageUnion
+	notifications []notifier.NotifierContext
 }
 
 func NewSecondState(context *CommonStateContext) *SecondState {
-	return &SecondState{commonContext: context}
+	return &SecondState{
+		commonContext: context,
+		queueMessages: []types.MessageUnion{},
+		notifications: []notifier.NotifierContext{},
+	}
 }
 
 func (state *SecondState) ProcessUserInput(msg types.ReceivedMessage) {
@@ -25,6 +31,9 @@ func (state *SecondState) ProcessUserInput(msg types.ReceivedMessage) {
 		stateSwitcher.TransferToNewStateByChatId(chatId, newState)
 		state.queueMessages = append(state.queueMessages, types.MessageUnion{
 			Text: "Transfer to first state",
+		})
+		state.notifications = append(state.notifications, notifier.NotifierContext{
+			ChatId: msg.Sender.ChatId,
 		})
 	}
 	if msg.Content.Text == "3" {
@@ -45,6 +54,10 @@ func (state *SecondState) ProcessSystemInvoke(chatId types.ChatId) {
 
 func (state *SecondState) GetBotMessages() []types.MessageUnion {
 	return state.queueMessages
+}
+
+func (state *SecondState) GetNotifications() []notifier.NotifierContext {
+	return state.notifications
 }
 
 func (state *SecondState) ProcessContextedSystemInvoke(chatId types.ChatId, context interface{}) {

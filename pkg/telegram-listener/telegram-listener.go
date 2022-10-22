@@ -1,7 +1,6 @@
 package telegramlistener
 
 import (
-	"fmt"
 	"log"
 
 	"github.com/TVBlackman1/telegram-go/pkg/lib"
@@ -45,21 +44,24 @@ func (workspace *TgWorkspace) Run() error {
 			workspace.reactOnMessage(update.Message)
 		}
 	}
-
 	return nil
 }
 
 func (workspace *TgWorkspace) reactOnMessage(message *tgbotapi.Message) {
 	receivedMessage := workspace.buildReceivedMessage(message)
 	usingHandler := workspace.router.RouteByMessage(receivedMessage)
-	answers := usingHandler.Process(receivedMessage)
-	for _, answer := range answers {
+	result := usingHandler.Process(receivedMessage)
+	for _, answer := range result.Messages {
 		if empty, _ := lib.IsEmptyStruct(answer); empty {
 			return
-		}
+		} // TODO remove check
 		msg := tgbotapi.NewMessage(message.Chat.ID, "")
 		presenter.Present(&msg, answer)
-		workspace.bot.Send(msg)
+		workspace.bot.Send(msg) // TODO add delay with condition
+	}
+	for _, notification := range result.Notifications {
+		// TODO global change, with timers, etc
+		workspace.NotifyUser(notification.ChatId)
 	}
 }
 
@@ -78,7 +80,6 @@ func (workspace *TgWorkspace) NotifyUserWithContext(chatId types.ChatId, context
 func (workspace *TgWorkspace) RunNotificator() {
 	notificator := workspace.notifier.GetNotificator()
 	for notification := range notificator {
-		fmt.Println("Readed notification")
 		chatId := notification.ChatId
 		workspace.NotifyUser(chatId)
 	}
