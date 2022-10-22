@@ -13,7 +13,7 @@ func NewUserHandler(stateService *service.UserService) *UserHandler {
 	return &UserHandler{stateService}
 }
 
-func (handler *UserHandler) Process(message types.ReceivedMessage) types.MessageUnion {
+func (handler *UserHandler) Process(message types.ReceivedMessage) []types.MessageUnion {
 	chatId := message.Sender.ChatId
 	currentState, _ := handler.userService.GetCurrentState(chatId)
 	stateProcessor, _ := handler.userService.GetCurrentStateProcessor(currentState)
@@ -21,5 +21,5 @@ func (handler *UserHandler) Process(message types.ReceivedMessage) types.Message
 	// TODO change ID to full state content in above method
 	stateProcessor.ProcessUserInput(message)
 	// TODO several times sends message to processor
-	return stateProcessor.PreparePresentation()
+	return stateProcessor.GetBotMessages()
 }

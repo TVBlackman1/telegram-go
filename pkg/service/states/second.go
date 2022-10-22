@@ -10,23 +10,11 @@ const SECOND_STATE_NAME = "Second state"
 
 type SecondState struct {
 	commonContext *CommonStateContext
-	toNewState    bool
-	newStateInfo  string
+	queueMessages []types.MessageUnion
 }
 
 func NewSecondState(context *CommonStateContext) *SecondState {
 	return &SecondState{commonContext: context}
-}
-
-func (state *SecondState) PreparePresentation() types.MessageUnion {
-	if state.toNewState {
-		return types.MessageUnion{
-			Text: state.newStateInfo,
-		}
-	}
-	return types.MessageUnion{
-		Text: "this is second state",
-	}
 }
 
 func (state *SecondState) ProcessUserInput(msg types.ReceivedMessage) {
@@ -35,17 +23,32 @@ func (state *SecondState) ProcessUserInput(msg types.ReceivedMessage) {
 		stateSwitcher := state.commonContext.StateSwitcher
 		newState := StateOnFlyDto{FIRST_STATE_NAME, "{}"}
 		stateSwitcher.TransferToNewStateByChatId(chatId, newState)
-		state.toNewState = true
-		state.newStateInfo = "Transfer to first state"
+		state.queueMessages = append(state.queueMessages, types.MessageUnion{
+			Text: "Transfer to first state",
+		})
 	}
 	if msg.Content.Text == "3" {
 		chatId := msg.Sender.ChatId
 		stateSwitcher := state.commonContext.StateSwitcher
 		newState := StateOnFlyDto{THIRD_STATE_NAME, "{}"}
 		stateSwitcher.TransferToNewStateByChatId(chatId, newState)
-		state.toNewState = true
-		state.newStateInfo = "Transfer to third state"
+		fmt.Println("Before adding")
+		state.queueMessages = append(state.queueMessages, types.MessageUnion{
+			Text: "Transfer to third state",
+		})
 	}
+}
+
+func (state *SecondState) ProcessSystemInvoke(chatId types.ChatId) {
+	panic("not implemented")
+}
+
+func (state *SecondState) GetBotMessages() []types.MessageUnion {
+	return state.queueMessages
+}
+
+func (state *SecondState) ProcessContextedSystemInvoke(chatId types.ChatId, context interface{}) {
+	panic("not implemented")
 }
 
 func (state *SecondState) SetContext(msg types.ReceivedMessage, context interface{}) error {

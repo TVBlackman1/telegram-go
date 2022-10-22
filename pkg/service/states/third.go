@@ -11,23 +11,11 @@ const THIRD_STATE_NAME = "Third state"
 type ThirdState struct {
 	commonContext *CommonStateContext
 	jokeToAnswer  bool
-	toNewState    bool
-	newStateInfo  string
+	queueMessages []types.MessageUnion // TODO change to chan notifier.NotifierContext
 }
 
 func NewThirdState(context *CommonStateContext) *ThirdState {
 	return &ThirdState{commonContext: context}
-}
-
-func (state *ThirdState) PreparePresentation() types.MessageUnion {
-	if state.toNewState {
-		return types.MessageUnion{
-			Text: state.newStateInfo,
-		}
-	}
-	return types.MessageUnion{
-		Text: "this is third state",
-	}
 }
 
 func (state *ThirdState) ProcessUserInput(msg types.ReceivedMessage) {
@@ -37,9 +25,22 @@ func (state *ThirdState) ProcessUserInput(msg types.ReceivedMessage) {
 		stateSwitcher := state.commonContext.StateSwitcher
 		newState := StateOnFlyDto{SECOND_STATE_NAME, "{}"}
 		stateSwitcher.TransferToNewStateByChatId(chatId, newState)
-		state.toNewState = true
-		state.newStateInfo = "Transfer to second state"
+		state.queueMessages = append(state.queueMessages, types.MessageUnion{
+			Text: "Transfer to second state",
+		})
 	}
+}
+
+func (state *ThirdState) ProcessSystemInvoke(chatId types.ChatId) {
+	panic("not implemented")
+}
+
+func (state *ThirdState) GetBotMessages() []types.MessageUnion {
+	return state.queueMessages
+}
+
+func (state *ThirdState) ProcessContextedSystemInvoke(chatId types.ChatId, context interface{}) {
+	panic("not implemented")
 }
 
 func (state *ThirdState) SetContext(msg types.ReceivedMessage, context interface{}) error {

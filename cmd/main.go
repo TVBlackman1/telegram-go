@@ -4,6 +4,7 @@ import (
 	"log"
 
 	"github.com/TVBlackman1/telegram-go/configs"
+	"github.com/TVBlackman1/telegram-go/pkg/notifier"
 	repo "github.com/TVBlackman1/telegram-go/pkg/repository/postgres"
 	"github.com/TVBlackman1/telegram-go/pkg/router"
 	"github.com/TVBlackman1/telegram-go/pkg/service"
@@ -27,10 +28,12 @@ func main() {
 		log.Fatalf("repo err: %s", err.Error())
 	}
 	defer repo.Close()
-	userService := service.NewUserService(repo)
-	router := router.NewRouter(userService)
-	bot := telegramlistener.NewTelegramBot(config.TELEGRAM_TOKEN, router)
 
+	notifier := notifier.NewSystemNotifier()
+	// TODO check how to use notifier just in user service
+	userService := service.NewUserService(repo, notifier)
+	router := router.NewRouter(userService)
+	bot := telegramlistener.NewTelegramBot(config.TELEGRAM_TOKEN, router, notifier)
 	// go func() {
 	// 	for {
 	// 		time.Sleep(3 * time.Second)

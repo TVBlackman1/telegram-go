@@ -5,6 +5,7 @@ import (
 	"fmt"
 
 	"github.com/TVBlackman1/telegram-go/pkg/lib/presenter/types"
+	"github.com/TVBlackman1/telegram-go/pkg/notifier"
 	"github.com/TVBlackman1/telegram-go/pkg/repository"
 	"github.com/TVBlackman1/telegram-go/pkg/repository/utils"
 	"github.com/TVBlackman1/telegram-go/pkg/service/states"
@@ -16,8 +17,8 @@ type UserService struct {
 	stateContext *states.CommonStateContext
 }
 
-func NewUserService(rep *repository.Repository) *UserService {
-	stateContext := states.NewCommonStateContext(rep)
+func NewUserService(rep *repository.Repository, notifier *notifier.SystemNotifier) *UserService {
+	stateContext := states.NewCommonStateContext(rep, notifier)
 	return &UserService{rep, stateContext}
 }
 

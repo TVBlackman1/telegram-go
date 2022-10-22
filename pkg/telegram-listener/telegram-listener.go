@@ -1,26 +1,30 @@
 package telegramlistener
 
 import (
+	"fmt"
 	"log"
 
 	"github.com/TVBlackman1/telegram-go/pkg/lib"
 	"github.com/TVBlackman1/telegram-go/pkg/lib/presenter"
 	"github.com/TVBlackman1/telegram-go/pkg/lib/presenter/types"
+	"github.com/TVBlackman1/telegram-go/pkg/notifier"
 	"github.com/TVBlackman1/telegram-go/pkg/router"
 	tgbotapi "github.com/go-telegram-bot-api/telegram-bot-api/v5"
 )
 
 type TgWorkspace struct {
-	token  string
-	router *router.Router
-	bot    *tgbotapi.BotAPI
+	token    string
+	router   *router.Router
+	notifier *notifier.SystemNotifier
+	bot      *tgbotapi.BotAPI
 }
 
-func NewTelegramBot(token string, router *router.Router) *TgWorkspace {
+func NewTelegramBot(token string, router *router.Router, notifier *notifier.SystemNotifier) *TgWorkspace {
 	return &TgWorkspace{
-		token:  token,
-		router: router,
-		bot:    nil,
+		token:    token,
+		router:   router,
+		bot:      nil,
+		notifier: notifier,
 	}
 }
 
@@ -31,6 +35,8 @@ func (workspace *TgWorkspace) Run() error {
 	}
 	workspace.bot = bot
 	log.Printf("Authorized on account %s", bot.Self.UserName)
+
+	go workspace.RunNotificator()
 	updates := workspace.getMessageChan()
 
 	for update := range updates {
@@ -39,19 +45,22 @@ func (workspace *TgWorkspace) Run() error {
 			workspace.reactOnMessage(update.Message)
 		}
 	}
+
 	return nil
 }
 
 func (workspace *TgWorkspace) reactOnMessage(message *tgbotapi.Message) {
 	receivedMessage := workspace.buildReceivedMessage(message)
 	usingHandler := workspace.router.RouteByMessage(receivedMessage)
-	answer := usingHandler.Process(receivedMessage)
-	if empty, _ := lib.IsEmptyStruct(answer); empty {
-		return
+	answers := usingHandler.Process(receivedMessage)
+	for _, answer := range answers {
+		if empty, _ := lib.IsEmptyStruct(answer); empty {
+			return
+		}
+		msg := tgbotapi.NewMessage(message.Chat.ID, "")
+		presenter.Present(&msg, answer)
+		workspace.bot.Send(msg)
 	}
-	msg := tgbotapi.NewMessage(message.Chat.ID, "")
-	presenter.Present(&msg, answer)
-	workspace.bot.Send(msg)
 }
 
 func (workspace *TgWorkspace) NotifyUser(chatId types.ChatId) {
@@ -64,6 +73,15 @@ func (workspace *TgWorkspace) NotifyUser(chatId types.ChatId) {
 
 func (workspace *TgWorkspace) NotifyUserWithContext(chatId types.ChatId, context interface{}) {
 	panic("not implemented")
+}
+
+func (workspace *TgWorkspace) RunNotificator() {
+	notificator := workspace.notifier.GetNotificator()
+	for notification := range notificator {
+		fmt.Println("Readed notification")
+		chatId := notification.ChatId
+		workspace.NotifyUser(chatId)
+	}
 }
 
 func (workspace *TgWorkspace) buildReceivedMessage(message *tgbotapi.Message) types.ReceivedMessage {

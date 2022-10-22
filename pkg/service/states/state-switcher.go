@@ -36,3 +36,7 @@ func (stateSwitcher *StateSwitcher) TransferToNewStateByChatId(chatId types.Chat
 	})
 	return stateSwitcher.TransferToNewState(user.Id, state)
 }
+
+func (stateSwitcher *StateSwitcher) Immediately() {
+
+}

@@ -13,6 +13,8 @@ func NewStartHandler(stateService *service.UserService) *StartHandler {
 	return &StartHandler{stateService}
 }
 
-func (handler *StartHandler) Process(message types.ReceivedMessage) types.MessageUnion {
-	return handler.stateService.RegisterNewUser(message.Sender)
+func (handler *StartHandler) Process(message types.ReceivedMessage) []types.MessageUnion {
+	return []types.MessageUnion{
+		handler.stateService.RegisterNewUser(message.Sender),
+	}
 }

@@ -5,5 +5,5 @@ import (
 )
 
 type ConcreteHandler interface {
-	Process(message types.ReceivedMessage) types.MessageUnion
+	Process(message types.ReceivedMessage) []types.MessageUnion
 }
