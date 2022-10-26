@@ -3,6 +3,7 @@ package states
 import (
 	"fmt"
 
+	"github.com/TVBlackman1/telegram-go/pkg/constants"
 	"github.com/TVBlackman1/telegram-go/pkg/lib/presenter/types"
 	"github.com/TVBlackman1/telegram-go/pkg/notifier"
 	"github.com/google/uuid"
@@ -14,14 +15,14 @@ type FirstState struct {
 	commonContext *CommonStateContext
 	stateId       uuid.UUID
 	queueMessages []types.MessageUnion
-	notifications []notifier.NotifierContext
+	autoMessages  []notifier.NotifierContext
 }
 
 func NewFirstState(context *CommonStateContext) *FirstState {
 	return &FirstState{
 		commonContext: context,
 		queueMessages: []types.MessageUnion{},
-		notifications: []notifier.NotifierContext{},
+		autoMessages:  []notifier.NotifierContext{},
 	}
 }
 
@@ -40,6 +41,9 @@ func (state *FirstState) ProcessUserInput(msg types.ReceivedMessage) {
 		state.queueMessages = append(state.queueMessages, types.MessageUnion{
 			Text: "Transfer to second state",
 		})
+		state.autoMessages = append(state.autoMessages, notifier.NotifierContext{
+			ChatId: msg.Sender.ChatId,
+		})
 	}
 }
 
@@ -48,10 +52,9 @@ func (state *FirstState) ProcessSystemInvoke(chatId types.ChatId) {
 		Text: "Exec: system invoke of first state",
 	})
 	state.queueMessages = append(state.queueMessages, types.MessageUnion{
-		Text: "Pick desired state",
+		Text: constants.KEYBOARD_HAS_BEEN_OPENED,
 		Keyboard: types.Keyboard{
-			[]types.ButtonContent{"1", "2"},
-			[]types.ButtonContent{"3"},
+			[]types.ButtonContent{"2"},
 		},
 	})
 }
@@ -60,8 +63,8 @@ func (state *FirstState) GetBotMessages() []types.MessageUnion {
 	return state.queueMessages
 }
 
-func (state *FirstState) GetNotifications() []notifier.NotifierContext {
-	return state.notifications
+func (state *FirstState) GetAutoMessages() []notifier.NotifierContext {
+	return state.autoMessages
 }
 
 func (state *FirstState) ProcessContextedSystemInvoke(chatId types.ChatId, context interface{}) {

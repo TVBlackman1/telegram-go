@@ -3,6 +3,7 @@ package states
 import (
 	"fmt"
 
+	"github.com/TVBlackman1/telegram-go/pkg/constants"
 	"github.com/TVBlackman1/telegram-go/pkg/lib/presenter/types"
 	"github.com/TVBlackman1/telegram-go/pkg/notifier"
 )
@@ -12,14 +13,14 @@ const SECOND_STATE_NAME = "Second state"
 type SecondState struct {
 	commonContext *CommonStateContext
 	queueMessages []types.MessageUnion
-	notifications []notifier.NotifierContext
+	autoMessages  []notifier.NotifierContext
 }
 
 func NewSecondState(context *CommonStateContext) *SecondState {
 	return &SecondState{
 		commonContext: context,
 		queueMessages: []types.MessageUnion{},
-		notifications: []notifier.NotifierContext{},
+		autoMessages:  []notifier.NotifierContext{},
 	}
 }
 
@@ -32,7 +33,7 @@ func (state *SecondState) ProcessUserInput(msg types.ReceivedMessage) {
 		state.queueMessages = append(state.queueMessages, types.MessageUnion{
 			Text: "Transfer to first state",
 		})
-		state.notifications = append(state.notifications, notifier.NotifierContext{
+		state.autoMessages = append(state.autoMessages, notifier.NotifierContext{
 			ChatId: msg.Sender.ChatId,
 		})
 	}
@@ -41,23 +42,30 @@ func (state *SecondState) ProcessUserInput(msg types.ReceivedMessage) {
 		stateSwitcher := state.commonContext.StateSwitcher
 		newState := StateOnFlyDto{THIRD_STATE_NAME, "{}"}
 		stateSwitcher.TransferToNewStateByChatId(chatId, newState)
-		fmt.Println("Before adding")
 		state.queueMessages = append(state.queueMessages, types.MessageUnion{
 			Text: "Transfer to third state",
+		})
+		state.autoMessages = append(state.autoMessages, notifier.NotifierContext{
+			ChatId: msg.Sender.ChatId,
 		})
 	}
 }
 
 func (state *SecondState) ProcessSystemInvoke(chatId types.ChatId) {
-	panic("not implemented")
+	state.queueMessages = append(state.queueMessages, types.MessageUnion{
+		Text: constants.KEYBOARD_HAS_BEEN_OPENED,
+		Keyboard: types.Keyboard{
+			[]types.ButtonContent{"1", "3"},
+		},
+	})
 }
 
 func (state *SecondState) GetBotMessages() []types.MessageUnion {
 	return state.queueMessages
 }
 
-func (state *SecondState) GetNotifications() []notifier.NotifierContext {
-	return state.notifications
+func (state *SecondState) GetAutoMessages() []notifier.NotifierContext {
+	return state.autoMessages
 }
 
 func (state *SecondState) ProcessContextedSystemInvoke(chatId types.ChatId, context interface{}) {

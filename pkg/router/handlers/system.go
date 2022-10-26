@@ -21,7 +21,7 @@ func (handler *SystemHandler) Process(chatId types.ChatId) HandlerProcessResult 
 	stateProcessor.ProcessSystemInvoke(chatId)
 	// TODO several times sends message to processor
 	return HandlerProcessResult{
-		Messages:      stateProcessor.GetBotMessages(),
-		Notifications: stateProcessor.GetNotifications(),
+		Messages:     stateProcessor.GetBotMessages(),
+		Automessages: stateProcessor.GetAutoMessages(),
 	}
 }

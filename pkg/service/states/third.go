@@ -3,6 +3,7 @@ package states
 import (
 	"fmt"
 
+	"github.com/TVBlackman1/telegram-go/pkg/constants"
 	"github.com/TVBlackman1/telegram-go/pkg/lib/presenter/types"
 	"github.com/TVBlackman1/telegram-go/pkg/notifier"
 )
@@ -13,14 +14,14 @@ type ThirdState struct {
 	commonContext *CommonStateContext
 	jokeToAnswer  bool
 	queueMessages []types.MessageUnion
-	notifications []notifier.NotifierContext
+	autoMessages  []notifier.NotifierContext
 }
 
 func NewThirdState(context *CommonStateContext) *ThirdState {
 	return &ThirdState{
 		commonContext: context,
 		queueMessages: []types.MessageUnion{},
-		notifications: []notifier.NotifierContext{},
+		autoMessages:  []notifier.NotifierContext{},
 	}
 }
 
@@ -34,19 +35,35 @@ func (state *ThirdState) ProcessUserInput(msg types.ReceivedMessage) {
 		state.queueMessages = append(state.queueMessages, types.MessageUnion{
 			Text: "Transfer to second state",
 		})
+		state.autoMessages = append(state.autoMessages, notifier.NotifierContext{
+			ChatId: msg.Sender.ChatId,
+		})
+	}
+	if msg.Content.Text == "joke" {
+		state.queueMessages = append(state.queueMessages, types.MessageUnion{
+			Text: "Sorry. I do not know jokes",
+		})
+		state.autoMessages = append(state.autoMessages, notifier.NotifierContext{
+			ChatId: msg.Sender.ChatId,
+		}) // TODO automize this
 	}
 }
 
 func (state *ThirdState) ProcessSystemInvoke(chatId types.ChatId) {
-	panic("not implemented")
+	state.queueMessages = append(state.queueMessages, types.MessageUnion{
+		Text: constants.KEYBOARD_HAS_BEEN_OPENED,
+		Keyboard: types.Keyboard{
+			[]types.ButtonContent{"2", "joke"},
+		},
+	})
 }
 
 func (state *ThirdState) GetBotMessages() []types.MessageUnion {
 	return state.queueMessages
 }
 
-func (state *ThirdState) GetNotifications() []notifier.NotifierContext {
-	return state.notifications
+func (state *ThirdState) GetAutoMessages() []notifier.NotifierContext {
+	return state.autoMessages
 }
 
 func (state *ThirdState) ProcessContextedSystemInvoke(chatId types.ChatId, context interface{}) {

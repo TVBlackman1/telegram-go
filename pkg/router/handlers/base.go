@@ -6,8 +6,8 @@ import (
 )
 
 type HandlerProcessResult struct {
-	Messages      []types.MessageUnion
-	Notifications []notifier.NotifierContext
+	Messages     []types.MessageUnion
+	Automessages []notifier.NotifierContext
 }
 
 type ConcreteHandler interface {

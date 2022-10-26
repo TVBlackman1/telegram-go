@@ -55,7 +55,7 @@ func (workspace *TgWorkspace) reactOnMessage(message *tgbotapi.Message) {
 		presenter.Present(&msg, answer)
 		workspace.bot.Send(msg) // TODO add delay with condition
 	}
-	for _, notification := range result.Notifications {
+	for _, notification := range result.Automessages {
 		// TODO global change, with timers, etc
 		workspace.SendAutoMessage(notification.ChatId)
 	}
@@ -69,7 +69,7 @@ func (workspace *TgWorkspace) SendAutoMessage(chatId types.ChatId) {
 		presenter.Present(&msg, answer)
 		workspace.bot.Send(msg) // TODO add delay with condition
 	}
-	for _, notification := range result.Notifications {
+	for _, notification := range result.Automessages {
 		// TODO global change, with timers, etc
 		workspace.SendAutoMessage(notification.ChatId)
 	}

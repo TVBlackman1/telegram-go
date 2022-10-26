@@ -22,7 +22,7 @@ func (handler *UserHandler) Process(message types.ReceivedMessage) HandlerProces
 	stateProcessor.ProcessUserInput(message)
 	// TODO several times sends message to processor
 	return HandlerProcessResult{
-		Messages:      stateProcessor.GetBotMessages(),
-		Notifications: stateProcessor.GetNotifications(),
+		Messages:     stateProcessor.GetBotMessages(),
+		Automessages: stateProcessor.GetAutoMessages(),
 	}
 }
