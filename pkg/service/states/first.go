@@ -3,7 +3,7 @@ package states
 import (
 	"fmt"
 
-	"github.com/TVBlackman1/telegram-go/pkg/constants"
+	"github.com/TVBlackman1/telegram-go/pkg/lib"
 	"github.com/TVBlackman1/telegram-go/pkg/lib/presenter/types"
 	"github.com/TVBlackman1/telegram-go/pkg/notifier"
 	"github.com/google/uuid"
@@ -27,9 +27,6 @@ func NewFirstState(context *CommonStateContext) *FirstState {
 }
 
 func (state *FirstState) ProcessUserInput(msg types.ReceivedMessage) {
-	state.queueMessages = append(state.queueMessages, types.MessageUnion{
-		Text: "Current state is first",
-	})
 	if msg.Content.Text == "2" {
 		chatId := msg.Sender.ChatId
 		stateSwitcher := state.commonContext.StateSwitcher
@@ -41,21 +38,13 @@ func (state *FirstState) ProcessUserInput(msg types.ReceivedMessage) {
 		state.queueMessages = append(state.queueMessages, types.MessageUnion{
 			Text: "Transfer to second state",
 		})
-		state.autoMessages = append(state.autoMessages, notifier.NotifierContext{
-			ChatId: msg.Sender.ChatId,
-		})
 	}
+	lib.AddAutoMessageFromUserState(state.autoMessages, msg.Sender.ChatId)
 }
 
 func (state *FirstState) ProcessSystemInvoke(chatId types.ChatId) {
-	state.queueMessages = append(state.queueMessages, types.MessageUnion{
-		Text: "Exec: system invoke of first state",
-	})
-	state.queueMessages = append(state.queueMessages, types.MessageUnion{
-		Text: constants.KEYBOARD_HAS_BEEN_OPENED,
-		Keyboard: types.Keyboard{
-			[]types.ButtonContent{"2"},
-		},
+	lib.AddKeyboard(state.queueMessages, types.Keyboard{
+		[]types.ButtonContent{"2"},
 	})
 }
 
