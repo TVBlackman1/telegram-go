@@ -21,7 +21,6 @@ func (handler *StartHandler) Process(message types.ReceivedMessage) HandlerProce
 		},
 		Automessages: []notifier.NotifierContext{{
 			ChatId: message.Sender.ChatId,
-		},
-		},
+		}},
 	}
 }

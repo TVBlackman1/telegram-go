@@ -39,11 +39,12 @@ func (state *FirstState) ProcessUserInput(msg types.ReceivedMessage) {
 			Text: "Transfer to second state",
 		})
 	}
-	lib.AddAutoMessageFromUserState(state.autoMessages, msg.Sender.ChatId)
+	state.autoMessages = lib.AddAutoMessageFromUserState(state.autoMessages, msg.Sender.ChatId)
+
 }
 
 func (state *FirstState) ProcessSystemInvoke(chatId types.ChatId) {
-	lib.AddKeyboard(state.queueMessages, types.Keyboard{
+	state.queueMessages = lib.AddKeyboard(state.queueMessages, types.Keyboard{
 		[]types.ButtonContent{"2"},
 	})
 }

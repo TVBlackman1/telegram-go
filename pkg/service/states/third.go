@@ -1,9 +1,13 @@
 package states
 
 import (
+	"fmt"
+	"math/rand"
+
 	"github.com/TVBlackman1/telegram-go/pkg/lib"
 	"github.com/TVBlackman1/telegram-go/pkg/lib/presenter/types"
 	"github.com/TVBlackman1/telegram-go/pkg/notifier"
+	"github.com/TVBlackman1/telegram-go/pkg/repository"
 )
 
 const THIRD_STATE_NAME = "Third state"
@@ -35,16 +39,21 @@ func (state *ThirdState) ProcessUserInput(msg types.ReceivedMessage) {
 		})
 	}
 	if msg.Content.Text == "joke" {
+		jokeCount, _ := state.commonContext.rep.JokeRepository.Count("")
+		randomJokeNumber := rand.Int() % jokeCount
+		joke, _ := state.commonContext.rep.JokeRepository.GetOne(repository.JokeQuery{
+			Offset: randomJokeNumber,
+		})
 		state.queueMessages = append(state.queueMessages, types.MessageUnion{
-			Text: "Sorry. I do not know jokes",
+			Text: fmt.Sprintf("%s", joke.Text),
 		})
 	}
-	lib.AddAutoMessageFromUserState(state.autoMessages, msg.Sender.ChatId)
+	state.autoMessages = lib.AddAutoMessageFromUserState(state.autoMessages, msg.Sender.ChatId)
 
 }
 
 func (state *ThirdState) ProcessSystemInvoke(chatId types.ChatId) {
-	lib.AddKeyboard(state.queueMessages, types.Keyboard{
+	state.queueMessages = lib.AddKeyboard(state.queueMessages, types.Keyboard{
 		[]types.ButtonContent{"2", "joke"},
 	})
 }

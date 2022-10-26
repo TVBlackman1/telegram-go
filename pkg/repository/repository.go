@@ -10,6 +10,7 @@ type Repository struct {
 	Conn            *sqlx.DB
 	UserRepository  UserRepository
 	StateRepository StateRepository
+	JokeRepository  JokeRepository
 }
 
 func (repo *Repository) Close() {

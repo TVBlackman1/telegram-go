@@ -13,7 +13,8 @@ func NewSystemHandler(stateService *service.UserService) *SystemHandler {
 	return &SystemHandler{stateService}
 }
 
-// gets command from enum to exec something
+// TODO gets command from enum to exec something
+// TODO add common interface to all handlers
 func (handler *SystemHandler) Process(chatId types.ChatId) HandlerProcessResult {
 	currentState, _ := handler.userService.GetCurrentState(chatId)
 	stateProcessor, _ := handler.userService.GetCurrentStateProcessor(currentState)

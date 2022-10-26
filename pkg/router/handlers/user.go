@@ -14,6 +14,7 @@ func NewUserHandler(stateService *service.UserService) *UserHandler {
 }
 
 func (handler *UserHandler) Process(message types.ReceivedMessage) HandlerProcessResult {
+	// TODO check user exists
 	chatId := message.Sender.ChatId
 	currentState, _ := handler.userService.GetCurrentState(chatId)
 	stateProcessor, _ := handler.userService.GetCurrentStateProcessor(currentState)

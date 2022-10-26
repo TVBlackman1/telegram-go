@@ -13,6 +13,7 @@ func NewRepository(config PostgresConfig) (*repository.Repository, error) {
 	repo.Conn = conn
 	repo.UserRepository = NewUserRepository(repo.Conn)
 	repo.StateRepository = NewStateRepository(repo.Conn)
+	repo.JokeRepository = NewJokeRepository(repo.Conn)
 
 	return repo, nil
 }
