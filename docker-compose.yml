@@ -2,8 +2,8 @@
 
 version: '1'
 services:
-  flyway:
-    container_name: flyway_for_tg
+  flyway_migration:
+    container_name: flyway_migration_for_tg
     image: flyway/flyway:9.1.2-alpine
     command: -url=jdbc:postgresql://db:5432/${POSTGRES_DBNAME} -user=${POSTGRES_USER} -password=${POSTGRES_PASS} migrate
     volumes:
@@ -11,6 +11,15 @@ services:
     depends_on:
       db:
         condition: service_healthy
+  flyway_seed:
+    container_name: flyway_seed_for_tg
+    image: flyway/flyway:9.1.2-alpine
+    command: -url=jdbc:postgresql://db:5432/${POSTGRES_DBNAME} -user=${POSTGRES_USER} -password=${POSTGRES_PASS} -outOfOrder="true" migrate
+    volumes:
+      - ${PWD}/init/seeds:/flyway/sql
+    depends_on:
+      flyway_migration:
+        condition: service_completed_successfully
   db:
     container_name: db_for_tg
     image: postgres:latest
@@ -40,5 +49,5 @@ services:
       - TELEGRAM_TOKEN=${TELEGRAM_TOKEN}
       - APP_ENV=develop
     depends_on:
-      flyway:
+      flyway_seed:
         condition: service_completed_successfully

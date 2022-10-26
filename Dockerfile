@@ -14,7 +14,7 @@ RUN apk update && apk add --no-cache ca-certificates tzdata
 RUN adduser -Du 10001 botviewer
 
 RUN cp /usr/share/zoneinfo/Europe/Moscow /etc/localtime
-RUN echo "Europe/Moscow" >  /etc/timezone
+RUN echo "Europe/Moscow" > /etc/timezone
 
 RUN mkdir -p /application
 ADD . /application

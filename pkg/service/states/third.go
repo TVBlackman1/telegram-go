@@ -40,13 +40,19 @@ func (state *ThirdState) ProcessUserInput(msg types.ReceivedMessage) {
 	}
 	if msg.Content.Text == "joke" {
 		jokeCount, _ := state.commonContext.rep.JokeRepository.Count("")
-		randomJokeNumber := rand.Int() % jokeCount
-		joke, _ := state.commonContext.rep.JokeRepository.GetOne(repository.JokeQuery{
-			Offset: randomJokeNumber,
-		})
-		state.queueMessages = append(state.queueMessages, types.MessageUnion{
-			Text: fmt.Sprintf("%s", joke.Text),
-		})
+		if jokeCount == 0 {
+			state.queueMessages = append(state.queueMessages, types.MessageUnion{
+				Text: fmt.Sprint("Sorry. I do not know interesting jokes..."),
+			})
+		} else {
+			randomJokeNumber := rand.Int() % jokeCount
+			joke, _ := state.commonContext.rep.JokeRepository.GetOne(repository.JokeQuery{
+				Offset: randomJokeNumber,
+			})
+			state.queueMessages = append(state.queueMessages, types.MessageUnion{
+				Text: fmt.Sprintf("%s", joke.Text),
+			})
+		}
 	}
 	state.autoMessages = lib.AddAutoMessageFromUserState(state.autoMessages, msg.Sender.ChatId)
 
