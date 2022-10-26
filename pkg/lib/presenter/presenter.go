@@ -12,17 +12,10 @@ func Present(msg *tgbotapi.MessageConfig, data types.MessageUnion) error {
 		msg.Text = data.Text
 	}
 	if len(data.Keyboard) > 0 && len(data.Text) > 0 {
-		replyKeyboard := tgbotapi.NewReplyKeyboard()
-		for i := 0; i < len(data.Keyboard); i++ {
-			replyKeyboard.Keyboard = append(replyKeyboard.Keyboard, tgbotapi.NewKeyboardButtonRow())
-			for j := 0; j < len(data.Keyboard[i]); j++ {
-				text := string(data.Keyboard[i][j])
-				lastRow := replyKeyboard.Keyboard[len(replyKeyboard.Keyboard)-1]
-				lastRow = append(lastRow, tgbotapi.NewKeyboardButton(text))
-				replyKeyboard.Keyboard[len(replyKeyboard.Keyboard)-1] = lastRow
-			}
-		}
+		replyKeyboard := convertKeyboard(data.Keyboard)
 		msg.ReplyMarkup = replyKeyboard
+	} else {
+		msg.ReplyMarkup = tgbotapi.NewRemoveKeyboard(true)
 	}
 	if len(data.Media) > 0 {
 		return errors.New("media is not supported")
@@ -36,4 +29,18 @@ func Collect(msg *tgbotapi.Message) types.MessageUnion {
 		messageDto.Text = msg.Text
 	}
 	return messageDto
+}
+
+func convertKeyboard(keyboard types.Keyboard) tgbotapi.ReplyKeyboardMarkup {
+	replyKeyboard := tgbotapi.NewReplyKeyboard()
+	for i := 0; i < len(keyboard); i++ {
+		replyKeyboard.Keyboard = append(replyKeyboard.Keyboard, tgbotapi.NewKeyboardButtonRow())
+		for j := 0; j < len(keyboard[i]); j++ {
+			text := string(keyboard[i][j])
+			lastRow := replyKeyboard.Keyboard[len(replyKeyboard.Keyboard)-1]
+			lastRow = append(lastRow, tgbotapi.NewKeyboardButton(text))
+			replyKeyboard.Keyboard[len(replyKeyboard.Keyboard)-1] = lastRow
+		}
+	}
+	return replyKeyboard
 }
