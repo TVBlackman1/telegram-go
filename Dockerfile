@@ -21,6 +21,7 @@ ADD . /application
 WORKDIR /application
 RUN go mod vendor
 
+# change amd64 to necessary architecture
 RUN GOOS=linux GOARCH=amd64 CGO_ENABLED=0 \
     go build -mod=vendor -o ./bin/main.out ./cmd/main.go
 

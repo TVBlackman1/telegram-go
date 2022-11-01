@@ -4,7 +4,7 @@ version: '1'
 services:
   flyway_migration:
     container_name: flyway_migration_for_tg
-    image: flyway/flyway:9.1.2-alpine
+    image: flyway/flyway:9
     command: -url=jdbc:postgresql://db:5432/${POSTGRES_DBNAME} -user=${POSTGRES_USER} -password=${POSTGRES_PASS} migrate
     volumes:
       - ${PWD}/init/migrations:/flyway/sql
@@ -13,7 +13,7 @@ services:
         condition: service_healthy
   flyway_seed:
     container_name: flyway_seed_for_tg
-    image: flyway/flyway:9.1.2-alpine
+    image: flyway/flyway:9
     command: -url=jdbc:postgresql://db:5432/${POSTGRES_DBNAME} -user=${POSTGRES_USER} -password=${POSTGRES_PASS} -outOfOrder="true" migrate
     volumes:
       - ${PWD}/init/seeds:/flyway/sql

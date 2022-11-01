@@ -2,25 +2,6 @@
 
 Go application with telegram bot. Consider it like test example.
 
-Target fsm model of user:
-
-1) First state
-
-    a) to second state
-
-2) Second state
-
-    a) to first state
-
-    b) to third state
-
-3) Third state
-
-    a) to first state
-
-    b) show joke
-
-
 # Content
 
 * [Architecture](#architecture)
@@ -59,7 +40,7 @@ Use not default password for database in environment configuration for avoid kde
 # Run project
 
 ## Standard  Go application
-1. Create `develop.env` or `production.env` file by example or use python script in /scripts. Replace values if necessary
+1. Run python script for initialize
 ```shell
 python git_clone_init.py
 ```
@@ -79,8 +60,8 @@ make run_production
 ```
 
 ## Docker container
-Just for develop version now
-1. Create `develop.env` or `production.env` file by example or use python script in /scripts
+<i>Just for develop version now</I>
+1. Run python script for initialize
 ```shell
 python git_clone_init.py
 ```
