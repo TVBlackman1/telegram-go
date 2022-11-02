@@ -9,7 +9,8 @@ import (
 type routerHandlers struct {
 	StartHandler *handlers.StartHandler
 	UserHandler  *handlers.UserHandler
-	TestHandler  *handlers.TestHandler
+	AboutHandler *handlers.AboutHandler
+	HelpHandler  *handlers.HelpHandler
 }
 type Router struct {
 	handlers       routerHandlers
@@ -19,9 +20,10 @@ type Router struct {
 func NewRouter(userService *service.UserService) *Router {
 	return &Router{
 		handlers: routerHandlers{
-			StartHandler: handlers.NewStartHandler(userService),
 			UserHandler:  handlers.NewUserHandler(userService),
-			TestHandler:  handlers.NewTestHandler(userService),
+			StartHandler: handlers.NewStartHandler(userService),
+			AboutHandler: handlers.NewAboutHandler(userService),
+			HelpHandler:  handlers.NewHelpHandler(userService),
 		},
 		systemMessager: NewSystemMessager(userService),
 	}
@@ -29,16 +31,18 @@ func NewRouter(userService *service.UserService) *Router {
 
 func (router *Router) RouteByMessage(message types.ReceivedMessage) handlers.ConcreteHandler {
 	var retHandler handlers.ConcreteHandler
-	// TODO add more handlers: about, help
 	if message.Content.Text == "/start" {
 		retHandler = router.handlers.StartHandler
+	} else if message.Content.Text == "/about" {
+		retHandler = router.handlers.AboutHandler
+	} else if message.Content.Text == "/help" {
+		retHandler = router.handlers.HelpHandler
 	} else {
 		retHandler = router.handlers.UserHandler
 	}
 	return retHandler
 }
 
-// TODO think about output type
 func (router *Router) GetSystemMessager() *SystemMessager {
 	return router.systemMessager
 }

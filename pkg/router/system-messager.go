@@ -14,8 +14,6 @@ func NewSystemMessager(stateService *service.UserService) *SystemMessager {
 	return &SystemMessager{stateService}
 }
 
-// TODO gets command from enum to exec something
-// TODO add common interface to all handlers
 func (messager *SystemMessager) Process(chatId types.ChatId) handlers.HandlerProcessResult {
 	currentState, _ := messager.userService.GetCurrentState(chatId)
 	stateProcessor, _ := messager.userService.GetCurrentStateProcessor(currentState)
