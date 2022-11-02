@@ -42,7 +42,8 @@ Use not default password for database in environment configuration for avoid kde
 ## Standard  Go application
 1. Run python script for initialize
 ```shell
-python git_clone_init.py
+cd scripts
+python3 git_clone_init.py
 ```
 2. Run flyway migrations with PostgreSQL
 ```shell
@@ -63,7 +64,8 @@ make run_production
 <i>Just for develop version now</I>
 1. Run python script for initialize
 ```shell
-python git_clone_init.py
+cd scripts
+python3 git_clone_init.py
 ```
 2. Check environment variables
 3. Run docker
