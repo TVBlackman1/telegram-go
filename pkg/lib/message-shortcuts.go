@@ -6,8 +6,8 @@ import (
 	"github.com/TVBlackman1/telegram-go/pkg/notifier"
 )
 
-func AddKeyboard(messages []types.MessageUnion, keyboard types.Keyboard) []types.MessageUnion {
-	return append(messages, types.MessageUnion{
+func AddKeyboard(messages []types.Message, keyboard types.Keyboard) []types.Message {
+	return append(messages, types.Message{
 		Text:     constants.KEYBOARD_HAS_BEEN_OPENED,
 		Keyboard: keyboard,
 	})

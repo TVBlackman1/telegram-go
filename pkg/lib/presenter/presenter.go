@@ -7,7 +7,7 @@ import (
 	tgbotapi "github.com/go-telegram-bot-api/telegram-bot-api/v5"
 )
 
-func Present(msg *tgbotapi.MessageConfig, data types.MessageUnion) error {
+func Present(msg *tgbotapi.MessageConfig, data types.Message) error {
 	if data.Text != "" {
 		msg.Text = data.Text
 	}
@@ -23,8 +23,8 @@ func Present(msg *tgbotapi.MessageConfig, data types.MessageUnion) error {
 	return nil
 }
 
-func Collect(msg *tgbotapi.Message) types.MessageUnion {
-	var messageDto types.MessageUnion
+func Collect(msg *tgbotapi.Message) types.Message {
+	var messageDto types.Message
 	if msg.Text != "" {
 		messageDto.Text = msg.Text
 	}

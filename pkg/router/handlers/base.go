@@ -6,7 +6,7 @@ import (
 )
 
 type HandlerProcessResult struct {
-	Messages     []types.MessageUnion
+	Messages     []types.Message
 	Automessages []notifier.NotifierContext
 }
 

@@ -15,9 +15,9 @@ func NewTestHandler(stateService *service.UserService) *TestHandler {
 	return &TestHandler{stateService}
 }
 
-func (listener *TestHandler) Process(message types.ReceivedMessage) types.MessageUnion {
+func (listener *TestHandler) Process(message types.ReceivedMessage) types.Message {
 	text := message.Content.Text
-	return types.MessageUnion{
+	return types.Message{
 		Text: strings.ToUpper(text),
 	}
 }

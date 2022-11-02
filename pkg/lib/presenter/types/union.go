@@ -1,9 +1,16 @@
 package types
 
-type MessageUnion struct {
-	Text     string
+type Message struct {
+	Text      string
+	Keyboard  Keyboard
+	Media     []Media
+	IsCommand bool
+}
+
+// TODO integrate message for send: different in keyboard
+type MessageForSend struct {
+	Message
 	Keyboard Keyboard
-	Media    []Media
 }
 
 type ChatId int
@@ -13,7 +20,8 @@ type Sender struct {
 	Name   string
 	Login  string
 }
+
 type ReceivedMessage struct {
 	Sender  Sender
-	Content MessageUnion
+	Content Message
 }

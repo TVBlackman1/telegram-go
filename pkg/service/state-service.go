@@ -37,7 +37,7 @@ func (userService *UserService) GetCurrentStateProcessor(currentState repository
 	return stateProcessor, nil
 }
 
-func (userService *UserService) RegisterNewUser(sender types.Sender) (retMessage types.MessageUnion) {
+func (userService *UserService) RegisterNewUser(sender types.Sender) (retMessage types.Message) {
 	newUser := repository.CreateUserDto{
 		Id:     uuid.New(),
 		Login:  sender.Login,
@@ -53,14 +53,14 @@ func (userService *UserService) RegisterNewUser(sender types.Sender) (retMessage
 		} else {
 			textForSending = "Some error. Try again later"
 		}
-		retMessage = types.MessageUnion{
+		retMessage = types.Message{
 			Text: textForSending,
 		}
 		return
 	}
 	defaultState := states.StateOnFlyDto{Name: states.FIRST_STATE_NAME, Context: "{}"}
 	userService.stateContext.StateSwitcher.TransferToNewState(userUUID, defaultState)
-	retMessage = types.MessageUnion{
+	retMessage = types.Message{
 		Text: fmt.Sprintf("Thanks for using bot, %s!", sender.Name),
 	}
 	return

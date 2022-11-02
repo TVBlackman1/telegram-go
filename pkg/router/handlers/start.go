@@ -16,7 +16,7 @@ func NewStartHandler(stateService *service.UserService) *StartHandler {
 
 func (handler *StartHandler) Process(message types.ReceivedMessage) HandlerProcessResult {
 	return HandlerProcessResult{
-		Messages: []types.MessageUnion{
+		Messages: []types.Message{
 			handler.stateService.RegisterNewUser(message.Sender),
 		},
 		Automessages: []notifier.NotifierContext{{

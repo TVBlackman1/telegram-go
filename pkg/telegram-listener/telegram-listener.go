@@ -7,6 +7,7 @@ import (
 	"github.com/TVBlackman1/telegram-go/pkg/lib/presenter/types"
 	"github.com/TVBlackman1/telegram-go/pkg/notifier"
 	"github.com/TVBlackman1/telegram-go/pkg/router"
+	"github.com/TVBlackman1/telegram-go/pkg/router/handlers"
 	tgbotapi "github.com/go-telegram-bot-api/telegram-bot-api/v5"
 )
 
@@ -49,30 +50,15 @@ func (workspace *TgWorkspace) Run() error {
 func (workspace *TgWorkspace) reactOnMessage(message *tgbotapi.Message) {
 	receivedMessage := workspace.buildReceivedMessage(message)
 	usingHandler := workspace.router.RouteByMessage(receivedMessage)
-	result := usingHandler.Process(receivedMessage)
-	for _, answer := range result.Messages {
-		msg := tgbotapi.NewMessage(message.Chat.ID, "")
-		presenter.Present(&msg, answer)
-		workspace.bot.Send(msg) // TODO add delay with condition
-	}
-	for _, notification := range result.Automessages {
-		// TODO global change, with timers, etc
-		workspace.SendAutoMessage(notification.ChatId)
-	}
+	answersContent := usingHandler.Process(receivedMessage)
+	chatId := receivedMessage.Sender.ChatId
+	workspace.sendMessages(chatId, &answersContent)
 }
 
-func (workspace *TgWorkspace) SendAutoMessage(chatId types.ChatId) {
-	systemHandler := workspace.router.GetSystemHandler()
-	result := systemHandler.Process(chatId)
-	for _, answer := range result.Messages {
-		msg := tgbotapi.NewMessage(int64(chatId), "")
-		presenter.Present(&msg, answer)
-		workspace.bot.Send(msg) // TODO add delay with condition
-	}
-	for _, notification := range result.Automessages {
-		// TODO global change, with timers, etc
-		workspace.SendAutoMessage(notification.ChatId)
-	}
+func (workspace *TgWorkspace) sendAutoMessage(chatId types.ChatId) {
+	systemHandler := workspace.router.GetSystemMessager()
+	answersContent := systemHandler.Process(chatId)
+	workspace.sendMessages(chatId, &answersContent)
 }
 
 func (workspace *TgWorkspace) SendAutoMessageWithContext(chatId types.ChatId, context interface{}) {
@@ -83,7 +69,19 @@ func (workspace *TgWorkspace) RunNotificator() {
 	notificator := workspace.notifier.GetNotificator()
 	for notification := range notificator {
 		chatId := notification.ChatId
-		workspace.SendAutoMessage(chatId)
+		workspace.sendAutoMessage(chatId)
+	}
+}
+
+func (workspace *TgWorkspace) sendMessages(chatId types.ChatId, messagesContent *handlers.HandlerProcessResult) {
+	for _, answer := range messagesContent.Messages {
+		msg := tgbotapi.NewMessage(int64(chatId), "")
+		presenter.Present(&msg, answer)
+		workspace.bot.Send(msg) // TODO add delay with condition
+	}
+	for _, automessage := range messagesContent.Automessages {
+		// TODO global change, with timers, etc
+		workspace.sendAutoMessage(automessage.ChatId)
 	}
 }
 

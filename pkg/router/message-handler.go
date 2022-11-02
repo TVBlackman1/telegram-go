@@ -6,33 +6,39 @@ import (
 	"github.com/TVBlackman1/telegram-go/pkg/service"
 )
 
+type routerHandlers struct {
+	StartHandler *handlers.StartHandler
+	UserHandler  *handlers.UserHandler
+	TestHandler  *handlers.TestHandler
+}
 type Router struct {
-	StartHandler  *handlers.StartHandler
-	UserHandler   *handlers.UserHandler
-	SystemHandler *handlers.SystemHandler
-	TestHandler   *handlers.TestHandler
+	handlers       routerHandlers
+	systemMessager *SystemMessager
 }
 
 func NewRouter(userService *service.UserService) *Router {
 	return &Router{
-		StartHandler:  handlers.NewStartHandler(userService),
-		UserHandler:   handlers.NewUserHandler(userService),
-		SystemHandler: handlers.NewSystemHandler(userService),
-		TestHandler:   handlers.NewTestHandler(userService),
+		handlers: routerHandlers{
+			StartHandler: handlers.NewStartHandler(userService),
+			UserHandler:  handlers.NewUserHandler(userService),
+			TestHandler:  handlers.NewTestHandler(userService),
+		},
+		systemMessager: NewSystemMessager(userService),
 	}
 }
 
-func (handler *Router) RouteByMessage(message types.ReceivedMessage) handlers.ConcreteHandler {
+func (router *Router) RouteByMessage(message types.ReceivedMessage) handlers.ConcreteHandler {
 	var retHandler handlers.ConcreteHandler
+	// TODO add more handlers: about, help
 	if message.Content.Text == "/start" {
-		retHandler = handler.StartHandler
+		retHandler = router.handlers.StartHandler
 	} else {
-		retHandler = handler.UserHandler
+		retHandler = router.handlers.UserHandler
 	}
 	return retHandler
 }
 
 // TODO think about output type
-func (handler *Router) GetSystemHandler() *handlers.SystemHandler {
-	return handler.SystemHandler
+func (router *Router) GetSystemMessager() *SystemMessager {
+	return router.systemMessager
 }

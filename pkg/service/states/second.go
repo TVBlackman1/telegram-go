@@ -10,14 +10,14 @@ const SECOND_STATE_NAME = "Second state"
 
 type SecondState struct {
 	commonContext *CommonStateContext
-	queueMessages []types.MessageUnion
+	queueMessages []types.Message
 	autoMessages  []notifier.NotifierContext
 }
 
 func NewSecondState(context *CommonStateContext) *SecondState {
 	return &SecondState{
 		commonContext: context,
-		queueMessages: []types.MessageUnion{},
+		queueMessages: []types.Message{},
 		autoMessages:  []notifier.NotifierContext{},
 	}
 }
@@ -28,7 +28,7 @@ func (state *SecondState) ProcessUserInput(msg types.ReceivedMessage) {
 		stateSwitcher := state.commonContext.StateSwitcher
 		newState := StateOnFlyDto{FIRST_STATE_NAME, "{}"}
 		stateSwitcher.TransferToNewStateByChatId(chatId, newState)
-		state.queueMessages = append(state.queueMessages, types.MessageUnion{
+		state.queueMessages = append(state.queueMessages, types.Message{
 			Text: "Transfer to first state",
 		})
 	}
@@ -37,7 +37,7 @@ func (state *SecondState) ProcessUserInput(msg types.ReceivedMessage) {
 		stateSwitcher := state.commonContext.StateSwitcher
 		newState := StateOnFlyDto{THIRD_STATE_NAME, "{}"}
 		stateSwitcher.TransferToNewStateByChatId(chatId, newState)
-		state.queueMessages = append(state.queueMessages, types.MessageUnion{
+		state.queueMessages = append(state.queueMessages, types.Message{
 			Text: "Transfer to third state",
 		})
 	}
@@ -51,7 +51,7 @@ func (state *SecondState) ProcessSystemInvoke(chatId types.ChatId) {
 	})
 }
 
-func (state *SecondState) GetBotMessages() []types.MessageUnion {
+func (state *SecondState) GetBotMessages() []types.Message {
 	return state.queueMessages
 }
 

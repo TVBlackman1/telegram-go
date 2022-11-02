@@ -8,7 +8,7 @@ import (
 type UserState interface {
 	ProcessUserInput(msg types.ReceivedMessage)
 	ProcessSystemInvoke(chatId types.ChatId)
-	GetBotMessages() []types.MessageUnion
+	GetBotMessages() []types.Message
 	GetAutoMessages() []notifier.NotifierContext
 	ProcessContextedSystemInvoke(chatId types.ChatId, context interface{})
 	SetContext(msg types.ReceivedMessage, context interface{}) error

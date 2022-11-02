@@ -10,7 +10,7 @@ type NotifierParams struct {
 
 type NotifierContext struct {
 	ChatId  types.ChatId
-	Message types.MessageUnion
+	Message types.Message
 	Params  NotifierParams
 }
 

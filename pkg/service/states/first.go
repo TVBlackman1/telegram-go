@@ -14,14 +14,14 @@ const FIRST_STATE_NAME = "First state"
 type FirstState struct {
 	commonContext *CommonStateContext
 	stateId       uuid.UUID
-	queueMessages []types.MessageUnion
+	queueMessages []types.Message
 	autoMessages  []notifier.NotifierContext
 }
 
 func NewFirstState(context *CommonStateContext) *FirstState {
 	return &FirstState{
 		commonContext: context,
-		queueMessages: []types.MessageUnion{},
+		queueMessages: []types.Message{},
 		autoMessages:  []notifier.NotifierContext{},
 	}
 }
@@ -35,7 +35,7 @@ func (state *FirstState) ProcessUserInput(msg types.ReceivedMessage) {
 		// notificator := state.commonContext.Notifier.GetNotificator()
 		// defer func() { notificator <- notifier.NotifierContext{ChatId: chatId} }()
 		// notificator <- notifier.NotifierContext{ChatId: chatId}
-		state.queueMessages = append(state.queueMessages, types.MessageUnion{
+		state.queueMessages = append(state.queueMessages, types.Message{
 			Text: "Transfer to second state",
 		})
 	}
@@ -49,7 +49,7 @@ func (state *FirstState) ProcessSystemInvoke(chatId types.ChatId) {
 	})
 }
 
-func (state *FirstState) GetBotMessages() []types.MessageUnion {
+func (state *FirstState) GetBotMessages() []types.Message {
 	return state.queueMessages
 }
 
