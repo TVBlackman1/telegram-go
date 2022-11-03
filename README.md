@@ -45,12 +45,14 @@ Use not default password for database in environment configuration for avoid kde
 cd scripts
 python3 git_clone_init.py
 ```
-2. Run flyway migrations with PostgreSQL
+2. Check environment variables in `develop.env` or `production.env`
+3. Run flyway migrations and seeds with PostgreSQL (<i>./*.sh is using docker</i>)
 ```shell
 cd scripts
 sh ./migrations.sh
+sh ./seeds.sh
 ```
-3. Start project
+4. Start project
 ```shell
 cd build
 make run_develop
@@ -67,7 +69,7 @@ make run_production
 cd scripts
 python3 git_clone_init.py
 ```
-2. Check environment variables
+2. Check environment variables in `develop.env` or `production.env`
 3. Run docker
 ```shell
 docker compose --env-file ./develop.env up -d
