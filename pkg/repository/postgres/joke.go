@@ -59,3 +59,9 @@ func (rep *JokeRepository) GetOne(query repository.JokeQuery) (repository.JokeDb
 	jokes := repository.JokeDbToJokeDbDto(jokeDb)
 	return jokes, nil
 }
+
+func (rep *JokeRepository) UpdateContext(id uuid.UUID, context string) error {
+	request := fmt.Sprintf("UPDATE states set context='%s' where id='%s'", context, id)
+	rep.db.Query(request)
+	return nil
+}

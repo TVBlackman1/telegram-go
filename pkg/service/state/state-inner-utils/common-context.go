@@ -1,4 +1,4 @@
-package states
+package utils
 
 import (
 	"github.com/TVBlackman1/telegram-go/pkg/notifier"
@@ -6,14 +6,14 @@ import (
 )
 
 type CommonStateContext struct {
-	rep           *repository.Repository
+	Rep           *repository.Repository
 	StateSwitcher *StateSwitcher
 	Notifier      *notifier.SystemNotifier
 }
 
 func NewCommonStateContext(rep *repository.Repository, notifier *notifier.SystemNotifier) *CommonStateContext {
 	return &CommonStateContext{
-		rep:           rep,
+		Rep:           rep,
 		StateSwitcher: NewStateSwitcher(rep),
 		Notifier:      notifier,
 	}

@@ -1,20 +1,20 @@
-package states
+package second
 
 import (
 	"github.com/TVBlackman1/telegram-go/pkg/lib"
 	"github.com/TVBlackman1/telegram-go/pkg/lib/presenter/types"
 	"github.com/TVBlackman1/telegram-go/pkg/notifier"
+	"github.com/TVBlackman1/telegram-go/pkg/repository"
+	utils "github.com/TVBlackman1/telegram-go/pkg/service/state/state-inner-utils"
 )
 
-const SECOND_STATE_NAME = "Second state"
-
 type SecondState struct {
-	commonContext *CommonStateContext
+	commonContext *utils.CommonStateContext
 	queueMessages []types.Message
 	autoMessages  []notifier.NotifierContext
 }
 
-func NewSecondState(context *CommonStateContext) *SecondState {
+func NewSecondState(context *utils.CommonStateContext) *SecondState {
 	return &SecondState{
 		commonContext: context,
 		queueMessages: []types.Message{},
@@ -26,20 +26,17 @@ func (state *SecondState) ProcessUserInput(msg types.ReceivedMessage) {
 	if msg.Content.Text == "1" {
 		chatId := msg.Sender.ChatId
 		stateSwitcher := state.commonContext.StateSwitcher
-		newState := StateOnFlyDto{FIRST_STATE_NAME, "{}"}
+		newState := utils.StateOnFlyDto{
+			Name:    utils.FIRST_STATE_NAME,
+			Context: "{}",
+		}
 		stateSwitcher.TransferToNewStateByChatId(chatId, newState)
 		state.queueMessages = append(state.queueMessages, types.Message{
 			Text: "Transfer to first state",
 		})
 	}
 	if msg.Content.Text == "3" {
-		chatId := msg.Sender.ChatId
-		stateSwitcher := state.commonContext.StateSwitcher
-		newState := StateOnFlyDto{THIRD_STATE_NAME, "{}"}
-		stateSwitcher.TransferToNewStateByChatId(chatId, newState)
-		state.queueMessages = append(state.queueMessages, types.Message{
-			Text: "Transfer to third state",
-		})
+		state.toThirdState(msg)
 	}
 	state.autoMessages = lib.AddAutoMessageFromUserState(state.autoMessages, msg.Sender.ChatId)
 
@@ -63,10 +60,10 @@ func (state *SecondState) ProcessContextedSystemInvoke(chatId types.ChatId, cont
 	panic("not implemented")
 }
 
-func (state *SecondState) SetContext(msg types.ReceivedMessage, context interface{}) error {
+func (state *SecondState) SetState(msg types.ReceivedMessage, stateData repository.StateDbDto) error {
 	return nil
 }
 
 func (state *SecondState) GetName() string {
-	return SECOND_STATE_NAME
+	return utils.SECOND_STATE_NAME
 }

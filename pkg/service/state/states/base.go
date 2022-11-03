@@ -3,6 +3,7 @@ package states
 import (
 	"github.com/TVBlackman1/telegram-go/pkg/lib/presenter/types"
 	"github.com/TVBlackman1/telegram-go/pkg/notifier"
+	"github.com/TVBlackman1/telegram-go/pkg/repository"
 )
 
 type UserState interface {
@@ -11,6 +12,6 @@ type UserState interface {
 	GetBotMessages() []types.Message
 	GetAutoMessages() []notifier.NotifierContext
 	ProcessContextedSystemInvoke(chatId types.ChatId, context interface{})
-	SetContext(msg types.ReceivedMessage, context interface{}) error
+	SetState(msg types.ReceivedMessage, state repository.StateDbDto) error
 	GetName() string
 }

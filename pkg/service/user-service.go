@@ -8,22 +8,24 @@ import (
 	"github.com/TVBlackman1/telegram-go/pkg/notifier"
 	"github.com/TVBlackman1/telegram-go/pkg/repository"
 	"github.com/TVBlackman1/telegram-go/pkg/repository/utils"
-	"github.com/TVBlackman1/telegram-go/pkg/service/states"
+	"github.com/TVBlackman1/telegram-go/pkg/service/state"
+	stateUtils "github.com/TVBlackman1/telegram-go/pkg/service/state/state-inner-utils"
+	"github.com/TVBlackman1/telegram-go/pkg/service/state/states"
 	"github.com/google/uuid"
 )
 
 type UserService struct {
-	rep          *repository.Repository
-	stateContext *states.CommonStateContext
+	Rep          *repository.Repository
+	StateContext *stateUtils.CommonStateContext
 }
 
 func NewUserService(rep *repository.Repository, notifier *notifier.SystemNotifier) *UserService {
-	stateContext := states.NewCommonStateContext(rep, notifier)
+	stateContext := stateUtils.NewCommonStateContext(rep, notifier)
 	return &UserService{rep, stateContext}
 }
 
 func (userService *UserService) GetCurrentState(chatId types.ChatId) (repository.StateDbDto, error) {
-	user, err := userService.rep.UserRepository.GetOne(repository.UserQuery{
+	user, err := userService.Rep.UserRepository.GetOne(repository.UserQuery{
 		ChatId: chatId,
 	})
 	if err != nil {
@@ -33,7 +35,7 @@ func (userService *UserService) GetCurrentState(chatId types.ChatId) (repository
 }
 
 func (userService *UserService) GetCurrentStateProcessor(currentState repository.StateDbDto) (states.UserState, error) {
-	stateProcessor := states.GetStateProcessor(currentState.Name, userService.stateContext)
+	stateProcessor := state.GetStateProcessor(currentState.Name, userService.StateContext)
 	return stateProcessor, nil
 }
 
@@ -44,7 +46,7 @@ func (userService *UserService) RegisterNewUser(sender types.Sender) (retMessage
 		Name:   sender.Name,
 		ChatId: sender.ChatId,
 	}
-	userUUID, err := userService.rep.UserRepository.Add(newUser)
+	userUUID, err := userService.Rep.UserRepository.Add(newUser)
 	if err != nil {
 		var textForSending string
 		// TODO change error processing
@@ -58,8 +60,8 @@ func (userService *UserService) RegisterNewUser(sender types.Sender) (retMessage
 		}
 		return
 	}
-	defaultState := states.StateOnFlyDto{Name: states.FIRST_STATE_NAME, Context: "{}"}
-	userService.stateContext.StateSwitcher.TransferToNewState(userUUID, defaultState)
+	defaultState := stateUtils.StateOnFlyDto{Name: stateUtils.FIRST_STATE_NAME, Context: "{}"}
+	userService.StateContext.StateSwitcher.TransferToNewState(userUUID, defaultState)
 	retMessage = types.Message{
 		Text: fmt.Sprintf("Thanks for using bot, %s!", sender.Name),
 	}

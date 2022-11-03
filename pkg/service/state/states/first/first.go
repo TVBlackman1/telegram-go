@@ -1,24 +1,20 @@
-package states
+package first
 
 import (
-	"fmt"
-
 	"github.com/TVBlackman1/telegram-go/pkg/lib"
 	"github.com/TVBlackman1/telegram-go/pkg/lib/presenter/types"
 	"github.com/TVBlackman1/telegram-go/pkg/notifier"
-	"github.com/google/uuid"
+	"github.com/TVBlackman1/telegram-go/pkg/repository"
+	utils "github.com/TVBlackman1/telegram-go/pkg/service/state/state-inner-utils"
 )
 
-const FIRST_STATE_NAME = "First state"
-
 type FirstState struct {
-	commonContext *CommonStateContext
-	stateId       uuid.UUID
+	commonContext *utils.CommonStateContext
 	queueMessages []types.Message
 	autoMessages  []notifier.NotifierContext
 }
 
-func NewFirstState(context *CommonStateContext) *FirstState {
+func NewFirstState(context *utils.CommonStateContext) *FirstState {
 	return &FirstState{
 		commonContext: context,
 		queueMessages: []types.Message{},
@@ -30,7 +26,10 @@ func (state *FirstState) ProcessUserInput(msg types.ReceivedMessage) {
 	if msg.Content.Text == "2" {
 		chatId := msg.Sender.ChatId
 		stateSwitcher := state.commonContext.StateSwitcher
-		newState := StateOnFlyDto{SECOND_STATE_NAME, "{}"}
+		newState := utils.StateOnFlyDto{
+			Name:    utils.SECOND_STATE_NAME,
+			Context: "{}",
+		}
 		stateSwitcher.TransferToNewStateByChatId(chatId, newState)
 		// notificator := state.commonContext.Notifier.GetNotificator()
 		// defer func() { notificator <- notifier.NotifierContext{ChatId: chatId} }()
@@ -61,16 +60,10 @@ func (state *FirstState) ProcessContextedSystemInvoke(chatId types.ChatId, conte
 	panic("not implemented")
 }
 
-func (state *FirstState) SetContext(msg types.ReceivedMessage, context interface{}) error {
-	stateId := fmt.Sprintf("%v", context)
-	uuidId, err := uuid.Parse(stateId)
-	if err != nil {
-		return err
-	}
-	state.stateId = uuidId
+func (state *FirstState) SetState(msg types.ReceivedMessage, stateData repository.StateDbDto) error {
 	return nil
 }
 
 func (state *FirstState) GetName() string {
-	return FIRST_STATE_NAME
+	return utils.FIRST_STATE_NAME
 }

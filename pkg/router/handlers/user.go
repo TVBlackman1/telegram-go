@@ -18,7 +18,7 @@ func (handler *UserHandler) Process(message types.ReceivedMessage) HandlerProces
 	chatId := message.Sender.ChatId
 	currentState, _ := handler.userService.GetCurrentState(chatId)
 	stateProcessor, _ := handler.userService.GetCurrentStateProcessor(currentState)
-	stateProcessor.SetContext(message, currentState.Id)
+	stateProcessor.SetState(message, currentState)
 	// TODO change ID to full state content in above method
 	stateProcessor.ProcessUserInput(message)
 	return HandlerProcessResult{

@@ -13,6 +13,7 @@ type JokeRepository interface {
 	GetList(interface{})
 	Count(interface{}) (int, error)
 	GetOne(JokeQuery) (JokeDbDto, error)
+	UpdateContext(uuid.UUID, string) error
 }
 
 type JokeDbDto struct {
