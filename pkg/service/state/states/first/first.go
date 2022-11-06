@@ -24,19 +24,7 @@ func NewFirstState(context *utils.CommonStateContext) *FirstState {
 
 func (state *FirstState) ProcessUserInput(msg types.ReceivedMessage) {
 	if msg.Content.Text == "2" {
-		chatId := msg.Sender.ChatId
-		stateSwitcher := state.commonContext.StateSwitcher
-		newState := utils.StateOnFlyDto{
-			Name:    utils.SECOND_STATE_NAME,
-			Context: "{}",
-		}
-		stateSwitcher.TransferToNewStateByChatId(chatId, newState)
-		// notificator := state.commonContext.Notifier.GetNotificator()
-		// defer func() { notificator <- notifier.NotifierContext{ChatId: chatId} }()
-		// notificator <- notifier.NotifierContext{ChatId: chatId}
-		state.queueMessages = append(state.queueMessages, types.Message{
-			Text: "Transfer to second state",
-		})
+		state.toSecondState(msg)
 	}
 	state.autoMessages = lib.AddAutoMessageFromUserState(state.autoMessages, msg.Sender.ChatId)
 

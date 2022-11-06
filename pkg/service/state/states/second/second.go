@@ -24,16 +24,7 @@ func NewSecondState(context *utils.CommonStateContext) *SecondState {
 
 func (state *SecondState) ProcessUserInput(msg types.ReceivedMessage) {
 	if msg.Content.Text == "1" {
-		chatId := msg.Sender.ChatId
-		stateSwitcher := state.commonContext.StateSwitcher
-		newState := utils.StateOnFlyDto{
-			Name:    utils.FIRST_STATE_NAME,
-			Context: "{}",
-		}
-		stateSwitcher.TransferToNewStateByChatId(chatId, newState)
-		state.queueMessages = append(state.queueMessages, types.Message{
-			Text: "Transfer to first state",
-		})
+		state.toFirstState(msg)
 	}
 	if msg.Content.Text == "3" {
 		state.toThirdState(msg)
