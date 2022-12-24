@@ -1,5 +1,5 @@
 # Initial stage
-FROM golang:1.18 as modules
+FROM golang:1.18-alpine as modules
 
 ADD go.mod go.sum /m/
 RUN cd /m && go mod download
